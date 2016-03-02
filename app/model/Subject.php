@@ -14,7 +14,7 @@ class Subject extends Object
     /**
      * @var $title string
      */
-    private $title
+    private $title;
 
     public static function fromRow(IRow $row)
     {
