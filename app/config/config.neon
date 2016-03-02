@@ -20,7 +20,11 @@ session:
 
 
 services:
-	- App\Model\UserManager
 	- App\Forms\FormFactory
 	- App\Forms\SignFormFactory
 	router: App\RouterFactory::createRouter
+
+
+security:
+    users:
+        admin: secret  # user 'admin', password 'secret'
