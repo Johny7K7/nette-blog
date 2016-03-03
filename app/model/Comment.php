@@ -19,7 +19,7 @@ class Comment extends Object
     /**
      * @var $content string
      */
-    private $content
+    private $content;
 
     public static function fromRow(IRow $row)
     {
