@@ -23,4 +23,38 @@ class Subject extends Object
         $subject->title = $row->title;
         return $subject;
     }
+
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSubjectId()
+    {
+        return $this->subjectId;
+    }
+
+    /**
+     * @param int $subjectId
+     */
+    public function setSubjectId($subjectId)
+    {
+        $this->subjectId = $subjectId;
+    }
+
+
 }

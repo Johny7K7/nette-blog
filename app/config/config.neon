@@ -23,4 +23,5 @@ services:
 	- App\Model\UserManager
 	- App\Forms\FormFactory
 	- App\Forms\SignFormFactory
+	wallservice: app\service\WallService
 	router: App\RouterFactory::createRouter

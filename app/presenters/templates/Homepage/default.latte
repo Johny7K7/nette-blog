@@ -4,8 +4,18 @@
 
 {block content}
 
-<div>
-    <h2>Login:</h2>
+<div n:foreach="$post as $post" class="post">
+    <div class="date">{$post->created_at|date:'F j, Y'}</div>
+
+    <h2>Meno: {$post->userId}</h2>
+    <h3>Predmet: {$post->subjectId}</h3>
+
+    <div>{$post->content}</div>
+
+    <div n:if="$post->link"></div>
+
+    <br>
+    <hr>
 </div>
 
 {/block}
