@@ -34,6 +34,8 @@ class WallServiceTest extends Tester\TestCase
 
         $post->content = "Ahoj";
         $post->link = "www";
+        $post->userId = "1";
+        $post->subjectId = "1";
         $this->wallService->createPost($post);
 
         Assert::notEqual(null, $post->postId);
@@ -48,6 +50,8 @@ class WallServiceTest extends Tester\TestCase
 
         $post->content = "Ahoj";
         $post->link = "ttt";
+        $post->userId = "1";
+        $post->subjectId = "1";
         $this->wallService->createPost($post);
 
         $post->setLink("abc");
@@ -55,6 +59,22 @@ class WallServiceTest extends Tester\TestCase
 
         $updatedPost = Post::fromRow($this->database->table(Post::TABLE)->get($post->postId));
         Assert::equal("abc", $updatedPost->link);
+    }
+
+    public function testDelete()
+    {
+        $post = new Post();
+
+        $post->content = "Cau";
+        $post->link = "zzz";
+        $post->userId = "1";
+        $post->subjectId = "1";
+        $this->wallService->createPost($post);
+
+        $this->wallService->deletePost($post);
+
+        //$deletedPost = Post::fromRow($this->database->table(Post::TABLE)->get($post->postId));
+        //Assert::null($deletedPost);
     }
 
 

@@ -17,13 +17,13 @@ class Subject extends Object implements \IteratorAggregate
      */
     private $title;
 
-    //public static function fromRow(IRow $row)
-    //{
-    //    $subject = new self();
-    //    $subject->subjectId = $row->subjectId;
-    //    $subject->title = $row->title;
-    //    return $subject;
-    //}
+    public static function fromRow(IRow $row)
+    {
+        $subject = new self();
+        $subject->subjectId = $row->subjectId;
+        $subject->title = $row->title;
+        return $subject;
+    }
 
     /**
      * @return string

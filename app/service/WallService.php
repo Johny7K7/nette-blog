@@ -42,4 +42,12 @@ class WallService
 
         $this->database->table(Post::TABLE)->where('postId', $post->postId)->update($post);
     }
+
+    public function deletePost(Post $post) {
+        if ($post->getPostId() == null){
+            throw new InvalidStateException("Prispevok, ktory chete zmazat musi mat ID.");
+        };
+
+        $this->database->table(Post::TABLE)->where('postId', $post->postId)->delete($post);
+    }
 }
