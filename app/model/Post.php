@@ -14,6 +14,11 @@ class Post extends Object implements \IteratorAggregate
     private $postId;
 
     /**
+     * @var $userId integer
+     */
+    private $userId;
+
+    /**
      * @var $created_at date
      */
     private $created_at;
@@ -29,6 +34,11 @@ class Post extends Object implements \IteratorAggregate
     private $link;
 
     /**
+     * @var $subjectId integer
+     */
+    private $subjectId;
+
+    /**
      * Post constructor.
      */
     public function __construct()
@@ -39,9 +49,11 @@ class Post extends Object implements \IteratorAggregate
     {
         $post = new self();
         $post->postId = $row->postId;
+        $post->userId = $row->userId;
         $post->created_at = $row->created_at;
         $post->content = $row->content;
         $post->link = $row->link;
+        $post->subjectId = $row->subjectId;
         return $post;
     }
 
@@ -109,6 +121,37 @@ class Post extends Object implements \IteratorAggregate
         $this->link = $link;
     }
 
+    /**
+     * @return int
+     */
+    public function getUserId()
+    {
+        return $this->userId;
+    }
+
+    /**
+     * @param int $userId
+     */
+    public function setUserId($userId)
+    {
+        $this->userId = $userId;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSubjectId()
+    {
+        return $this->subjectId;
+    }
+
+    /**
+     * @param int $subjectId
+     */
+    public function setSubjectId($subjectId)
+    {
+        $this->subjectId = $subjectId;
+    }
 
     /**
      * Retrieve an external iterator
@@ -120,10 +163,11 @@ class Post extends Object implements \IteratorAggregate
     public function getIterator()
     {
         return new \ArrayIterator(array(
+            'postId' => $this->postId,
+            'userId' => $this->userId,
             'content' => $this->content,
             'link' => $this->link,
-            'postId' => $this->postId,
-
+            'subjectId' => $this->subjectId,
         ));
     }
 }

@@ -2,14 +2,25 @@
 namespace app\model;
 use Nette\Database\IRow;
 use Nette\Object;
+use Traversable;
 
 
-class Comment extends Object
+class Comment extends Object implements \IteratorAggregate
 {
     /**
      * @var $commentId integer
      */
     private $commentId;
+
+    /**
+     * @var $userId integer
+     */
+    private $userId;
+
+    /**
+     * @var $postId integer
+     */
+    private $postId;
 
     /**
      * @var $created_at date
@@ -21,14 +32,14 @@ class Comment extends Object
      */
     private $content;
 
-    public static function fromRow(IRow $row)
-    {
-        $comment = new self();
-        $comment->commentId = $row->commentId;
-        $comment->created_at = $row->created_at;
-        $comment->content = $row->content;
-        return $comment;
-    }
+    //public static function fromRow(IRow $row)
+    //{
+    //    $comment = new self();
+    //    $comment->commentId = $row->commentId;
+    //    $comment->created_at = $row->created_at;
+    //    $comment->content = $row->content;
+    //    return $comment;
+    //}
 
     /**
      * @return int
@@ -78,5 +89,52 @@ class Comment extends Object
         $this->content = $content;
     }
 
+    /**
+     * @return int
+     */
+    public function getUserId()
+    {
+        return $this->userId;
+    }
 
+    /**
+     * @param int $userId
+     */
+    public function setUserId($userId)
+    {
+        $this->userId = $userId;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPostId()
+    {
+        return $this->postId;
+    }
+
+    /**
+     * @param int $postId
+     */
+    public function setPostId($postId)
+    {
+        $this->postId = $postId;
+    }
+
+    /**
+     * Retrieve an external iterator
+     * @link http://php.net/manual/en/iteratoraggregate.getiterator.php
+     * @return Traversable An instance of an object implementing <b>Iterator</b> or
+     * <b>Traversable</b>
+     * @since 5.0.0
+     */
+    public function getIterator()
+    {
+        return new \ArrayIterator(array(
+            'commentId' => $this->commentId,
+            'userId' => $this->userId,
+            'postId' => $this->postId,
+            'content' => $this->content,
+        ));
+    }
 }
