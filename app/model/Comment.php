@@ -7,6 +7,8 @@ use Traversable;
 
 class Comment extends Object implements \IteratorAggregate
 {
+    const TABLE = 'Comment';
+
     /**
      * @var $commentId integer
      */

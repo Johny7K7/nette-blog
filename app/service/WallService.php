@@ -11,6 +11,7 @@ class WallService
 {
     /** @var \Nette\Database\Context */
     private $database;
+
     /**
      * WallService constructor.
      * @param $database
@@ -37,7 +38,7 @@ class WallService
 
     public function updatePost(Post $post) {
         if ($post->getPostId() == null){
-            throw new InvalidStateException("Novy prispevok musi mat ID.");
+            throw new InvalidStateException("Obnoveny prispevok musi mat ID.");
         };
 
         $this->database->table(Post::TABLE)->where('postId', $post->postId)->update($post);

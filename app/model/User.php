@@ -9,6 +9,8 @@ class User extends Object implements \IteratorAggregate
     private static $GENDER_MALE = "M";
     private static $GENDER_FeMALE = "F";
 
+    const TABLE = 'User';
+
     /**
      * @var $id integer
      */

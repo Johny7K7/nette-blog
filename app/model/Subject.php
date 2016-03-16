@@ -7,6 +7,8 @@ use Traversable;
 
 class Subject extends Object implements \IteratorAggregate
 {
+    const TABLE = 'Subject';
+
     /**
      * @var $subjectId integer
      */

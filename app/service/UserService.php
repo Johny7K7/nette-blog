@@ -1,6 +1,6 @@
 <?php
 
-namespace app;
+namespace app\service;
 use app\model\User;
 use Nette\Database\Context;
 use Nette\Database\IRow;
@@ -8,10 +8,7 @@ use Nette\Database\Table\Selection;
 use Nette\Neon\Exception;
 class UserService
 {
-    /**
-     * @var $userTable Selection
-     */
-    private $userTable;
+    /** @var \Nette\Database\Context */
     private $database;
     /**
      * UserService constructor.
@@ -20,26 +17,33 @@ class UserService
     public function __construct(Context $database)
     {
         $this->database = $database;
-        $this->userTable = $this->database->table("users");
     }
+
     public function addUser(User $user) {
-        if ($user->id != null) {
-            throw new Exception("New user must not have id");
+        if ($user->userId != null) {
+            throw new Exception("Novy uzivatel nesmie mat Id");
         }
-        $this->userTable->insert($user);
+        $row = $this->database->table(User::TABLE)->insert($user);
+        $user->userId = $row->userId;
     }
-    /**
-     * @param $id integer
-     */
-    public function removeUser($id) {
-        // TODO: remove user
+
+    public function removeUser(User $user) {
+        if ($user->id == null) {
+            throw new Exception("Uzivatel, ktory ma byt vymazany musi mat Id");
+        }
+
+        $this->database->table(User::TABLE)->where('userId', $user->userId)->delete($user);
     }
-    /**
-     * @param User $user
-     */
+
     public function updateUser(User $user) {
-        // TODO: update user
+        if ($user->id == null) {
+            throw new Exception("Uzivatel, ktory ma byt obnoveny musi mat Id");
+        }
+
+        $this->database->table(User::TABLE)->where('userId', $user->userId)->update($user);
+
     }
+
     /**
      * @param $userId integer
      * @return User
