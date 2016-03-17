@@ -1,7 +1,8 @@
 <?php
 
-namespace app\service;
-use app\model\Comment;
+namespace App\Service;
+
+use App\Model\Comment;
 use Nette\Database\Context;
 use Nette\Neon\Exception;
 

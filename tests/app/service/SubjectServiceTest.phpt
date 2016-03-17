@@ -1,14 +1,21 @@
 <?php
 
-use app\model\Subject;
+namespace App\Service;
+
+use App\Model\Subject;
 use Tester\Assert;
 
 /**
  * @var $container \Nette\DI\Container
  */
-$container = require __DIR__ . '/../bootstrap.php';
+$container = require __DIR__ . '/../../bootstrap.php';
 
-class SubjectServiceTest extends Tester\TestCase
+/**
+ * Class SubjectServiceTest
+ * @package App\Service
+ *
+ */
+class SubjectServiceTest extends \Tester\TestCase
 {
     /** @var \Nette\Database\Context */
     private $database;
@@ -44,5 +51,5 @@ class SubjectServiceTest extends Tester\TestCase
 
 }
 
-$test = new SubjectServiceTest($container->getByType('\Nette\Database\Context'), $container->getByType('app\service\SubjectService'));
+$test = new SubjectServiceTest($container->getByType('\Nette\Database\Context'), $container->getByType('\App\Service\SubjectService'));
 $test->run();

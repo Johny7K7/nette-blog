@@ -1,5 +1,7 @@
 <?php
-namespace app\model;
+
+namespace App\Model;
+
 use Nette\Database\IRow;
 use Nette\Object;
 use Traversable;
@@ -52,9 +54,9 @@ class User extends Object implements \IteratorAggregate
     private $nickname;
 
     /**
-     * @var $is_teacher boolean
+     * @var $teacher boolean
      */
-    private $is_teacher;
+    private $teacher;
 
     /**
      * User constructor.
@@ -74,7 +76,7 @@ class User extends Object implements \IteratorAggregate
         $user->birthdate = $row->birthdate;
         $user->password = $row->password;
         $user->nickname = $row->nickname;
-        $user->is_teacher = $row->is_teacher;
+        $user->teacher = $row->is_teacher;
         return $user;
     }
 
@@ -209,17 +211,17 @@ class User extends Object implements \IteratorAggregate
     /**
      * @return boolean
      */
-    public function isIsTeacher()
+    public function isTeacher()
     {
-        return $this->is_teacher;
+        return $this->teacher;
     }
 
     /**
-     * @param boolean $is_teacher
+     * @param boolean $teacher
      */
-    public function setIsTeacher($is_teacher)
+    public function setTeacher($teacher)
     {
-        $this->is_teacher = $is_teacher;
+        $this->teacher = $teacher;
     }
 
     /**
@@ -240,7 +242,7 @@ class User extends Object implements \IteratorAggregate
             'birthdate' => $this->birthdate,
             'password' => $this->password,
             'nickname' => $this->nickname,
-            'is_teacher' => $this->is_teacher,
+            'is_teacher' => $this->teacher,
         ));
     }
 }

@@ -1,14 +1,21 @@
 <?php
 
-use app\model\Post;
+namespace App\Service;
+
+use App\Model\Post;
 use Tester\Assert;
+use Tester\TestCase;
 
 /**
  * @var $container \Nette\DI\Container
  */
-$container = require __DIR__ . '/../bootstrap.php';
+$container = require __DIR__ . '/../../bootstrap.php';
 
-class WallServiceTest extends Tester\TestCase
+/**
+ * Class WallServiceTest
+ * @package App\Service
+ */
+class WallServiceTest extends TestCase
 {
     /** @var \Nette\Database\Context */
     private $database;
@@ -68,18 +75,15 @@ class WallServiceTest extends Tester\TestCase
 
         $post->content = "Cau";
         $post->link = "zzz";
-        $post->userId = "1";
-        $post->subjectId = "1";
+        $post->userId = 1;
+        $post->subjectId = 2;
         $this->wallService->createPost($post);
 
         $this->wallService->deletePost($post);
 
-        //$deletedPost = Post::fromRow($this->database->table(Post::TABLE)->get($post->postId));
-        //Assert::null($deletedPost);
+        Assert::false($this->database->table(Post::TABLE)->get($post->postId));
     }
-
-
 }
 
-$test = new WallServiceTest($container->getByType('\Nette\Database\Context'), $container->getByType('app\service\WallService'));
+$test = new WallServiceTest($container->getByType('\Nette\Database\Context'), $container->getByType('\App\Service\WallService'));
 $test->run();

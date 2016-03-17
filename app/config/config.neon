@@ -23,8 +23,8 @@ services:
 	- App\Model\UserManager
 	- App\Forms\FormFactory
 	- App\Forms\SignFormFactory
-	wallservice: app\service\WallService
-	userservice: app\service\UserService
-	commentservice: app\service\CommentService
-	subjectsercice: app\service\SubjectService
+	- App\Service\WallService
+	- App\Service\UserService
+	- App\Service\CommentService
+	- App\Service\SubjectService
 	router: App\RouterFactory::createRouter
