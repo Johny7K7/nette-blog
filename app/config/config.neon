@@ -26,4 +26,5 @@ services:
 	wallservice: app\service\WallService
 	userservice: app\service\UserService
 	commentservice: app\service\CommentService
+	subjectsercice: app\service\SubjectService
 	router: App\RouterFactory::createRouter

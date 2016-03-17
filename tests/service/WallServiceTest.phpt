@@ -39,8 +39,8 @@ class WallServiceTest extends Tester\TestCase
         $post->subjectId = "1";
         $this->wallService->createPost($post);
 
-        Assert::notEqual(null, $post->postId);
-        $row = $this->database->table(Post::TABLE)->get($post->postId);
+        Assert::notEqual(null, $post->getPostId());
+        $row = $this->database->table(Post::TABLE)->get($post->getPostId());
         Assert::equal("Ahoj", $row->content);
         Assert::equal("www", $row->link);
     }
