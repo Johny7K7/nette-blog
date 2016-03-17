@@ -1,9 +1,8 @@
 <?php
 
-namespace app\service;
+namespace App\Service;
 
-
-use app\model\Subject;
+use App\Model\Subject;
 use Nette\Database\Context;
 use Nette\InvalidStateException;
 

@@ -1,14 +1,20 @@
 <?php
 
-use app\model\Comment;
+namespace App\Service;
+
+use App\Model\Comment;
 use Tester\Assert;
 
 /**
  * @var $container \Nette\DI\Container
  */
-$container = require __DIR__ . '/../bootstrap.php';
+$container = require __DIR__ . '/../../bootstrap.php';
 
-class CommentServiceTest extends Tester\TestCase
+/**
+ * Class CommentServiceTest
+ * @package App\Service
+ */
+class CommentServiceTest extends \Tester\TestCase
 {
     /** @var \Nette\Database\Context */
     private $database;
@@ -29,24 +35,24 @@ class CommentServiceTest extends Tester\TestCase
         $this->commentService = $commentService;
     }
 
-    public function testAdd(Comment $comment)
+    public function testAdd()
     {
         $comment = new Comment();
 
-        $comment->userId = "1";
-        $comment->postId = "1";
+        $comment->userId = 1;
+        $comment->postId = 2;
         $comment->content = "asdasdasd";
         $this->commentService->addComment($comment);
 
         Assert::notEqual(null, $comment->getCommentId());
         $row = $this->database->table(Comment::TABLE)->get($comment->getCommentId());
-        Assert::equal("1", $row->userId);
-        Assert::equal("1", $row->postId);
+        Assert::equal(1, $row->userId);
+        Assert::equal(2, $row->postId);
         Assert::equal("asdasdasd", $row->content);
 
     }
 
 }
 
-$test = new CommentServiceTest($container->getByType('\Nette\Database\Context'), $container->getByType('app\service\CommentService'));
+$test = new CommentServiceTest($container->getByType('\Nette\Database\Context'), $container->getByType('\App\Service\CommentService'));
 $test->run();

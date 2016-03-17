@@ -1,5 +1,7 @@
 <?php
-namespace app\model;
+
+namespace App\Model;
+
 use Nette\Database\IRow;
 use Nette\Object;
 use Traversable;

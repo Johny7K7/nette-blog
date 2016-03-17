@@ -1,10 +1,10 @@
 <?php
 
-namespace app\service;
-use app\model\Post;
-use app\model\User;
+namespace App\Service;
+
+use App\Model\Post;
+use App\Model\User;
 use Nette\Database\Context;
-use Nette\InvalidArgumentException;
 use Nette\InvalidStateException;
 
 class WallService

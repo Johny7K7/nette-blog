@@ -1,11 +1,16 @@
 <?php
 
-namespace app\service;
-use app\model\User;
+namespace App\Service;
+
+use App\Model\User;
 use Nette\Database\Context;
 use Nette\Database\IRow;
-use Nette\Database\Table\Selection;
 use Nette\Neon\Exception;
+
+/**
+ * Class UserService
+ * @package App\Service
+ */
 class UserService
 {
     /** @var \Nette\Database\Context */
