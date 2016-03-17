@@ -6,12 +6,13 @@ use App\Model\User;
 use Nette\Database\Context;
 use Nette\Database\IRow;
 use Nette\Neon\Exception;
+use Nette\Object;
 
 /**
  * Class UserService
  * @package App\Service
  */
-class UserService
+class UserService extends Object
 {
     /** @var \Nette\Database\Context */
     private $database;
