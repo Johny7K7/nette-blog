@@ -28,3 +28,6 @@ services:
 	- App\Service\CommentService
 	- App\Service\SubjectService
 	router: App\RouterFactory::createRouter
+# TODO: disables cache, delete in production mode !!!
+	cacheStorage:
+		class: Nette\Caching\Storages\DevNullStorage
