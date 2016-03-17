@@ -20,7 +20,7 @@ class UserService
     }
 
     public function addUser(User $user) {
-        if ($user->userId != null) {
+        if ($user->getUserId() != null) {
             throw new Exception("Novy uzivatel nesmie mat Id");
         }
         $row = $this->database->table(User::TABLE)->insert($user);
@@ -28,7 +28,7 @@ class UserService
     }
 
     public function removeUser(User $user) {
-        if ($user->id == null) {
+        if ($user->getUserId() == null) {
             throw new Exception("Uzivatel, ktory ma byt vymazany musi mat Id");
         }
 
@@ -36,7 +36,7 @@ class UserService
     }
 
     public function updateUser(User $user) {
-        if ($user->id == null) {
+        if ($user->getUserId() == null) {
             throw new Exception("Uzivatel, ktory ma byt obnoveny musi mat Id");
         }
 

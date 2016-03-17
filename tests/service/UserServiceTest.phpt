@@ -55,6 +55,45 @@ class UserServiceTest extends Tester\TestCase
         Assert::equal("1", $row->is_teacher);
     }
 
+    public function testRemove($user)
+    {
+        $user = new User();
+
+        $user->username = "Fero";
+        $user->userlastname = "Ferko";
+        $user->email = "fero@ferko.sk";
+        $user->gender = "M";
+        $user->birthdate = "1992-02-18";
+        $user->password = "fero";
+        $user->nickname = "ferino";
+        $user->is_teacher = "1";
+        $this->userService->addUser($user);
+
+        $this->userService->removeUser($user);
+    }
+
+    public function testUpdate($user)
+    {
+        $user = new User();
+
+        $user->username = "Fero";
+        $user->userlastname = "Ferko";
+        $user->email = "fero@ferko.sk";
+        $user->gender = "M";
+        $user->birthdate = "1992-02-18";
+        $user->password = "fero";
+        $user->nickname = "ferino";
+        $user->is_teacher = "1";
+        $this->userService->addUser($user);
+
+        $user->setIsTeacher("2");
+        $this->userService->updateUser($user);
+
+        $updatedUser = User::fromRow($this->database->table(User::TABLE)->get($user->userId));
+        Assert::equal("2", $updatedUser->is_teacher);
+
+    }
+
 }
 
 $test = new UserServiceTest($container->getByType('\Nette\Database\Context'), $container->getByType('app\service\UserService'));

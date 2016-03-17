@@ -27,7 +27,7 @@ class WallService
     }
 
     public function createPost(Post $post) {
-        if ($post->postId != null) {
+        if ($post->getPostId() != null) {
             throw new InvalidStateException("Novy prispevok nesmie mat ID.");
         }
 
