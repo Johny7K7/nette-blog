@@ -5,8 +5,9 @@ namespace App\Service;
 use App\Model\Subject;
 use Nette\Database\Context;
 use Nette\InvalidStateException;
+use Nette\Object;
 
-class SubjectService
+class SubjectService extends Object
 {
     /** @var \Nette\Database\Context */
     private $database;

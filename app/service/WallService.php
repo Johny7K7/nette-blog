@@ -6,8 +6,9 @@ use App\Model\Post;
 use App\Model\User;
 use Nette\Database\Context;
 use Nette\InvalidStateException;
+use Nette\Object;
 
-class WallService
+class WallService extends Object
 {
     /** @var \Nette\Database\Context */
     private $database;

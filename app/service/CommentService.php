@@ -5,8 +5,9 @@ namespace App\Service;
 use App\Model\Comment;
 use Nette\Database\Context;
 use Nette\Neon\Exception;
+use Nette\Object;
 
-class CommentService
+class CommentService extends Object
 {
     /** @var \Nette\Database\Context */
     private $database;
