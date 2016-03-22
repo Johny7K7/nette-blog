@@ -4,7 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a5c8f69538ccc14e0b6551542aeee99f",
+    "hash": "83854c76d67b97a30e69509ecb83cd33",
+    "content-hash": "e0867f94a9e63cb5aa55cef2fcbe1a36",
     "packages": [
         {
             "name": "dg/adminer-custom",
@@ -1058,16 +1059,16 @@
     "packages-dev": [
         {
             "name": "nette/tester",
-            "version": "v1.7.0",
+            "version": "v1.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/tester.git",
-                "reference": "efbc31ff4ee0bef28da712a726316e8b0b5bf262"
+                "reference": "d97534578e8cf66eabe081e7d5eaa4dd527ab0c8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/tester/zipball/efbc31ff4ee0bef28da712a726316e8b0b5bf262",
-                "reference": "efbc31ff4ee0bef28da712a726316e8b0b5bf262",
+                "url": "https://api.github.com/repos/nette/tester/zipball/d97534578e8cf66eabe081e7d5eaa4dd527ab0c8",
+                "reference": "d97534578e8cf66eabe081e7d5eaa4dd527ab0c8",
                 "shasum": ""
             },
             "require": {
@@ -1110,7 +1111,7 @@
                 "testing",
                 "unit"
             ],
-            "time": "2016-02-08 10:30:15"
+            "time": "2016-03-19 14:34:02"
         }
     ],
     "aliases": [],

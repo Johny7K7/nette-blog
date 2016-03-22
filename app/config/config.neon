@@ -20,6 +20,24 @@ session:
 
 
 services:
+    authenticator: MyAuthenticator
+    authorizator:
+    		class: Nette\Security\Permission
+    		setup:
+    			- addRole('teacher')
+    			- addRole('student')
+    			- addRole('admin')
+    			- addRole('guest')
+    			- addResource('Homepage')
+    			- addResource('Wall')
+    			- allow('teacher', 'Homepage')
+    			- allow('student', 'Homepage')
+    			- allow('admin', 'Homepage')
+    			- allow('guest', 'Homepage')
+    			- allow('teacher', 'Sign')
+    			- allow('student', 'Sign')
+    			- allow('admin', 'Sign')
+    			- allow('guest', 'Sign')
 	- App\Model\UserManager
 	- App\Forms\FormFactory
 	- App\Forms\SignFormFactory

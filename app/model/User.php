@@ -24,11 +24,6 @@ class User extends Object implements \IteratorAggregate
     private $username;
 
     /**
-     * @var $userlastname string
-     */
-    private $userlastname;
-
-    /**
      * @var $email string
      */
     private $email;
@@ -70,13 +65,12 @@ class User extends Object implements \IteratorAggregate
         $user = new self();
         $user->userId = $row->userId;
         $user->username = $row->username;
-        $user->userlastname = $row->userlastname;
         $user->email = $row->email;
         $user->gender = $row->gender;
         $user->birthdate = $row->birthdate;
         $user->password = $row->password;
         $user->nickname = $row->nickname;
-        $user->teacher = $row->is_teacher;
+        $user->teacher = $row->teacher;
         return $user;
     }
 
@@ -111,23 +105,7 @@ class User extends Object implements \IteratorAggregate
     {
         $this->username = $username;
     }
-
-    /**
-     * @return string
-     */
-    public function getUserlastname()
-    {
-        return $this->userlastname;
-    }
-
-    /**
-     * @param string $userlastname
-     */
-    public function setUserlastname($userlastname)
-    {
-        $this->userlastname = $userlastname;
-    }
-
+    
     /**
      * @return string
      */
@@ -189,7 +167,7 @@ class User extends Object implements \IteratorAggregate
      */
     public function setPassword($password)
     {
-        $this->password = $password;
+        $this->password = sha1($password);
     }
 
     /**
@@ -236,7 +214,6 @@ class User extends Object implements \IteratorAggregate
         return new \ArrayIterator(array(
             'userId' => $this->userId,
             'username' => $this->username,
-            'userlastname' => $this->userlastname,
             'email' => $this->email,
             'gender' => $this->gender,
             'birthdate' => $this->birthdate,

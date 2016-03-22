@@ -29,7 +29,7 @@ class SignPresenter extends BasePresenter
 		return $form;
 	}
 
-	public function signInFormSucceeded()
+	public function signInFormSucceeded($form)
 	{
 		$values = $form->getValues();
 
