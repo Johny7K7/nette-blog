@@ -8,13 +8,13 @@ use Nette\Database\Context;
 use Nette\InvalidStateException;
 use Nette\Object;
 
-class WallService extends Object
+class TeacherService extends Object
 {
     /** @var \Nette\Database\Context */
     private $database;
 
     /**
-     * WallService constructor.
+     * TeacherService constructor.
      * @param $database
      */
     public function __construct(Context $database)

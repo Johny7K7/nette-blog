@@ -20,32 +20,31 @@ session:
 
 
 services:
-    authenticator: MyAuthenticator
-    authorizator:
-    		class: Nette\Security\Permission
-    		setup:
-    			- addRole('teacher')
-    			- addRole('student')
-    			- addRole('admin')
-    			- addRole('guest')
-    			- addResource('Homepage')
-    			- addResource('Wall')
-    			- allow('teacher', 'Homepage')
-    			- allow('student', 'Homepage')
-    			- allow('admin', 'Homepage')
-    			- allow('guest', 'Homepage')
-    			- allow('teacher', 'Sign')
-    			- allow('student', 'Sign')
-    			- allow('admin', 'Sign')
-    			- allow('guest', 'Sign')
-	- App\Model\UserManager
+	authenticator: MyAuthenticator
+	authorizator:
+		class: Nette\Security\Permission
+		setup:
+			- addRole('teacher')
+			- addRole('student')
+			- addRole('admin')
+			- addRole('guest')
+			- addResource('Homepage')
+			- addResource('Sign')
+			- allow('teacher', 'Homepage')
+			- allow('student', 'Homepage')
+			- allow('admin', 'Homepage')
+			- allow('guest', 'Homepage')
+			- allow('teacher', 'Sign')
+			- allow('student', 'Sign')
+			- allow('admin', 'Sign')
+			- allow('guest', 'Sign')
 	- App\Forms\FormFactory
 	- App\Forms\SignFormFactory
 	- App\Service\WallService
 	- App\Service\UserService
 	- App\Service\CommentService
 	- App\Service\SubjectService
-	router: App\RouterFactory::createRouter
+	#router: App\RouterFactory::createRouter
 # TODO: disables cache, delete in production mode !!!
 	cacheStorage:
 		class: Nette\Caching\Storages\DevNullStorage

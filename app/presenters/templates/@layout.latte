@@ -94,12 +94,11 @@
                 <a n:href="Sign:out" style="float:right;"><b>Odhlasenie</b></a>
 
                 <div>
-                    <b>Prihlásený používateľ:</b> {$user->getIdentity()->titul_pred} {$user->getIdentity()->meno} {$user->getIdentity()->titul_za}
+                    <b>Prihlásený používateľ:</b> {$user->getIdentity()->username} <br>
+                    <b>Prihlásený: </b> {if $user->getIdentity()->teacher} Ucitel {/if}{if !$user->getIdentity()->teacher} Student {/if}
+                    <br>{$user->getIdentity()->getId()}
                 </div>
 
-                <div n:foreach="$user->getRoles() as $role">
-                    <b>Osobné číslo:</b> {$user->getId()}
-                </div>
             </div>
 
             <hr>

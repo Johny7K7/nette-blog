@@ -5,7 +5,7 @@
 {block content}
 
 <div>
-    <a n:href="Sign:in>Pridanie prispevku</a>
+    <a n:href="Sign:in">Prihlasenie</a>
 </div>
 
 <div>
@@ -20,7 +20,7 @@
 
     <div>{$post->content}</div>
 
-    <div n:if="$post->link"></div>
+    <div n:if="$post->link">{$post->link}</div>
 
     <br>
     <hr>
