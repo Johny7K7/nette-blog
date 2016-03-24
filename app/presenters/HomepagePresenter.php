@@ -2,12 +2,27 @@
 
 namespace App\Presenters;
 
+use App\Service\PostService;
 use Nette;
 use App\Model;
 
 
 class HomepagePresenter extends BasePresenter
 {
+	/**
+	 * @var $postService PostService
+	 */
+	private $postService;
+
+	/**
+	 * HomepagePresenter constructor.
+	 * @param PostService $postService
+	 */
+	public function __construct(PostService $postService)
+	{
+		$this->postService = $postService;
+	}
+
 	public function actionIn()
 	{
 		if(!$this->user->isLoggedIn()){
@@ -15,18 +30,15 @@ class HomepagePresenter extends BasePresenter
 		}
 	}
 
-	/** @var Nette\Database\Context */
-	private $database;
-
-	public function __construct(Nette\Database\Context $database)
-	{
-		$this->database = $database;
-	}
-
 	public function renderDefault()
 	{
-		$this->template->post = $this->database->table('Post')
-			->order('created_at DESC');
+		$this->template->posts = $this->postService->getAllPosts();
 	}
+
+	protected function createComponentPostsAsSubjectForm()
+	{
+
+	}
+
 
 }

@@ -40,4 +40,35 @@ class SubjectService extends Object
 
         $this->database->table(Subject::TABLE)->where('subjectId', $subject->subjectId)->delete($subject);
     }
+
+    public function getAllSubjects()
+    {
+        $sql = "SELECT subjectId, title FROM Subject";
+
+        $subjects = array();
+        foreach($this->database->query($sql)->fetchAll() as $subject) {
+            $subjects[$subject->subjectId] = $subject->title;
+        }
+        
+        return $subjects;
+    }
+
+    public function getSubjectFromTS($userId)
+    {
+        $sql = "SELECT subjectId, title FROM Subject WHERE subjectId IN (SELECT subjectId FROM Teacher_Subject WHERE userId = $userId)";
+
+        $subjects = array();
+        foreach($this->database->query($sql)->fetchAll() as $subject) {
+            $subjects[$subject->subjectId] = $subject->title;
+        }
+
+        return $subjects;
+    }
+
+    public function getPostsAsSubjects($subjectId)
+    {
+        $sql = "SELECT p.*, s.title, u.username FROM Post p, Subject s, User u WHERE ((p.subjectId = s.subjectId) 
+                AND (p.userId = u.userId) AND (p.subjectId = $subjectId)) ORDER BY created_at DESC";
+        $posts = $this->database->query($sql)->fetchAll();
+    }
 }

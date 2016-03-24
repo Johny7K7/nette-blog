@@ -4,6 +4,7 @@ namespace App\Presenters;
 
 use Nette;
 use Nette\Application\UI;
+use Nette\Application\UI\Form;
 use App\Service\UserService;
 use App\Model\User;
 
@@ -74,15 +75,17 @@ class SignPresenter extends BasePresenter
 
 		$user = new User();
 
+        //$birthdate = strtotime($values->birthdate);
+
 		$user->setUsername($values->username);
 		$user->setEmail($values->email);
 		$user->setGender($values->gender);
-		$user->setBirthdate($values->birthday);
+		$user->setBirthdate($values->birthdate);
 		$user->setPassword($values->password);
 		$user->setNickname($values->nickname);
-		$user->setTeacher($values->teacher);
+		$user->setTeacher($values->teacher == 'true');
 
-		$this->userService->addUser();
+		$this->userService->addUser($user);
 
 		$this->flashMessage('Uživateľ bol úspešne registrovaný.');
 		$this->redirect('Sign:in');

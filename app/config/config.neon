@@ -40,7 +40,7 @@ services:
 			- allow('guest', 'Sign')
 	- App\Forms\FormFactory
 	- App\Forms\SignFormFactory
-	- App\Service\WallService
+	- App\Service\TeacherService
 	- App\Service\UserService
 	- App\Service\CommentService
 	- App\Service\SubjectService

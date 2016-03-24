@@ -21,6 +21,6 @@ $configurator->addConfig(__DIR__ . '/config/config.local.neon');
 
 $container = $configurator->createContainer();
 
-$container->addService('router', new SimpleRouter('Homepage:'));
+$container->addService('router', new SimpleRouter('Sign:in'));
 
 return $container;

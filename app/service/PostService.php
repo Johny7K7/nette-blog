@@ -3,18 +3,19 @@
 namespace App\Service;
 
 use App\Model\Post;
+use App\Model\Subject;
 use App\Model\User;
 use Nette\Database\Context;
 use Nette\InvalidStateException;
 use Nette\Object;
 
-class TeacherService extends Object
+class PostService extends Object
 {
     /** @var \Nette\Database\Context */
     private $database;
 
     /**
-     * TeacherService constructor.
+     * PostService constructor.
      * @param $database
      */
     public function __construct(Context $database)
@@ -24,7 +25,13 @@ class TeacherService extends Object
     /**
      * @param ArrayList[Post] $user
      */
-    public function getAllPosts(User $user) {
+    public function getAllPosts()
+    {
+        $sql = "SELECT p.*, s.title, u.username FROM Post p, Subject s, User u WHERE (p.subjectId = s.subjectId) 
+                AND (p.userId = u.userId) ORDER BY created_at DESC";
+        $posts = $this->database->query($sql)->fetchAll();
+        
+        return $posts;
     }
 
     public function createPost(Post $post) {
@@ -52,4 +59,12 @@ class TeacherService extends Object
 
         $this->database->table(Post::TABLE)->where('postId', $post->postId)->delete($post);
     }
+    
+    public function addTeacherSubject($userId, $subjectId)
+    {
+        $ts = array("userId" => $userId, "subjectId" => $subjectId);
+
+        $row = $this->database->table('Teacher_Subject')->insert($ts);
+    }
+
 }

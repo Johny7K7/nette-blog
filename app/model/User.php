@@ -219,7 +219,7 @@ class User extends Object implements \IteratorAggregate
             'birthdate' => $this->birthdate,
             'password' => $this->password,
             'nickname' => $this->nickname,
-            'is_teacher' => $this->teacher,
+            'teacher' => $this->teacher,
         ));
     }
 }

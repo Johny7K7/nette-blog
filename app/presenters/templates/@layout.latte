@@ -10,7 +10,31 @@
 	<title>{ifset title}{include title|striptags} | {/ifset}Nette Sandbox</title>
 
 	<link rel="stylesheet" href="{$basePath}/css/style.css">
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+
 	<meta name="viewport" content="width=device-width">
+    {block scripts}
+        <script src="{$basePath}/js/jquery.js"></script>
+        <script src="{$basePath}/js/netteForms.js"></script>
+        <script src="{$basePath}/js/main.js"></script>
+        <script src="http://jush.sourceforge.net/jush.js"></script>
+        <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+        <script>
+            jush.create_links = false;
+            jush.highlight_tag('code');
+            $('code.jush').each(function(){ $(this).html($(this).html().replace(/\x7B[/$\w].*?\}/g, '<span class="jush-latte">$&</span>')) });
+
+            $('a[href^=#]').click(function(){
+                $('html,body').animate({ scrollTop: $($(this).attr('href')).show().offset().top - 5 }, 'fast');
+                return false;
+            });
+        </script>
+        <script>
+            $(function() {
+                $( ".datepicker" ).datepicker({ dateFormat: "yy-mm-dd" });
+            });
+        </script>
+    {/block}
 	{block head}
 	<style>
         html { overflow-y: scroll; }
@@ -95,7 +119,7 @@
 
                 <div>
                     <b>Prihlásený používateľ:</b> {$user->getIdentity()->username} <br>
-                    <b>Prihlásený: </b> {if $user->getIdentity()->teacher} Ucitel {/if}{if !$user->getIdentity()->teacher} Student {/if}
+                    <b>Prihlásený: </b> {if $user->getIdentity()->teacher} Učitel {/if}{if !$user->getIdentity()->teacher} Študent {/if}
                     <br>{$user->getIdentity()->getId()}
                 </div>
 
