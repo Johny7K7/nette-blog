@@ -1,0 +1,44 @@
+{block heading}
+    <h1 n:block="title">Vitejte v Informačnom systéme pre zdieľanie študijných materiálov.</h1>
+{/block}
+
+{block content}
+
+
+
+    <div>
+        <a n:href="Homepage:"><-- Späť</a>
+    </div>
+
+    <div class="post">
+        {if !$post} <h2>Tento príspevok neexistuje.</h2>
+        {else}
+            <a n:href="Post:changePost $post->postId">upravit</a>
+            <h2>{$post->username}</h2>
+            <h3>{$post->title}</h3>
+            <div class="date">{$post->created_at|date:'j.n.y, G:i'}</div>
+
+            <div>{$post->content}</div>
+
+            <div n:if="$post->link">{$post->link}</div>
+        {/if}
+        <br>
+        <hr>
+
+        <h3>Vložiť komentár</h3>
+        {control commentForm}
+
+        <hr>
+    </div>
+    <div n:foreach="$comments as $comment" class="comment">
+        <h4>{$comment->username}</h4>
+        <div class="date">{$comment->created_at|date:'j.n.y, G:i'}</div>
+        <div>{$comment->content}<hr></div>
+
+    </div>
+
+{/block}
+
+
+
+

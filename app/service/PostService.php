@@ -67,4 +67,18 @@ class PostService extends Object
         $row = $this->database->table('Teacher_Subject')->insert($ts);
     }
 
+    public function getOnePost($postId)
+    {
+        $sql = "SELECT p.*, s.title, u.username FROM Post p, Subject s, User u WHERE (p.subjectId = s.subjectId) 
+                AND (p.userId = u.userId) AND postId = $postId";
+        $post = $this->database->query($sql)->fetch();
+        
+        return $post;
+    }
+    
+    public function controlAuthor($postId)
+    {
+        
+    }
+
 }

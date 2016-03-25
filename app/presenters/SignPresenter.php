@@ -29,6 +29,13 @@ class SignPresenter extends BasePresenter
         $this->userService = $userService;
     }
 
+	public function actionIn()
+	{
+		if($this->user->isLoggedIn()){
+			$this->redirect('Homepage:');
+		}
+	}
+
 
     protected function createComponentRegistrationForm()
 	{
@@ -116,7 +123,7 @@ class SignPresenter extends BasePresenter
 		if ($values->remember) {
 			$this->getUser()->setExpiration('0', TRUE);
 		} else {
-			$this->getUser()->setExpiration('20 minutes', TRUE);
+			$this->getUser()->setExpiration('2 hours', TRUE);
 		}
 
 		try {

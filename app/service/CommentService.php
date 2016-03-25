@@ -45,4 +45,12 @@ class CommentService extends Object
 
         $this->database->table(Comment::TABLE)->where('commentId', $comment->getCommentId())->delete($comment);
     }
+    
+    public function getComments($postId)
+    {
+        $sql = "SELECT c.*, u.username FROM Comment c, User u WHERE c.postId = $postId AND c.userId = u.userId";
+        $comment = $this->database->query($sql)->fetchAll();
+        
+        return $comment;
+    }
 }

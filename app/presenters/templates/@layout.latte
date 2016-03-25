@@ -119,7 +119,7 @@
 
                 <div>
                     <b>Prihlásený používateľ:</b> {$user->getIdentity()->username} <br>
-                    <b>Prihlásený: </b> {if $user->getIdentity()->teacher} Učitel {/if}{if !$user->getIdentity()->teacher} Študent {/if}
+                    <b>Prihlásený: </b>{if $user->getIdentity()->teacher} Učitel {/if}{if !$user->getIdentity()->teacher} Študent {/if}
                     <br>{$user->getIdentity()->getId()}
                 </div>
 

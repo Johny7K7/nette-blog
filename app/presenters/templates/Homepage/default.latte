@@ -5,16 +5,16 @@
 {block content}
 
     <div>
-        <a n:if="$user->getIdentity()->teacher == 1" n:href="Teacher:subject">Pridať predmet</a>
+        <a n:if="$user->getIdentity()->teacher == true" n:href="Post:subject">Pridať predmet</a>
     </div>
 
     <div>
-        <a n:if="$user->getIdentity()->teacher == 1" n:href="Teacher:postForm">Pridanie prispevku</a>
+        <a n:if="$user->getIdentity()->teacher == true" n:href="Post:postForm">Pridanie prispevku</a>
     </div>
 
     <div n:foreach="$posts as $post" class="post">
 
-        <h2>{$post->username}</h2>
+        <h2>{$post->username}</h2> <p><a n:href="Post:onePostAndComments $post->postId">--></a></p>
         <h3>{$post->title}</h3>
         <div class="date">{$post->created_at|date:'j.n.y, G:i'}</div>
 

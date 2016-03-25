@@ -30,8 +30,8 @@ class MyAuthenticator extends Nette\Object implements NS\IAuthenticator
             'email' => $row->email,
             'gender' => $row->gender,
             'birthdate' => $row->birthdate,
-            'nickname' =>$row->nickname,
-            'teacher' =>$row->teacher,
+            'nickname' => $row->nickname,
+            'teacher' => $row->teacher,
         ));
     }
 }
