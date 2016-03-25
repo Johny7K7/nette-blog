@@ -85,10 +85,12 @@ class PostPresenter extends BasePresenter
         }
 
 
-        $this->flashMessage('Príspevok bol úspešne pridaný.');
+        
         if ($values->postId){
-            $this->redirect('Post:onePostAndComments');
+            $this->flashMessage('Príspevok bol úspešne upravený.');
+            $this->redirect("Post:onePostAndComments", array('postId' => $values->postId));
         }else{
+            $this->flashMessage('Príspevok bol úspešne pridaný.');
             $this->redirect('Homepage:');
         }
     }

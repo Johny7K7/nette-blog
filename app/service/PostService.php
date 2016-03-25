@@ -76,9 +76,4 @@ class PostService extends Object
         return $post;
     }
     
-    public function controlAuthor($postId)
-    {
-        
-    }
-
 }
