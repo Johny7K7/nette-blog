@@ -4,6 +4,7 @@ namespace App\Presenters;
 
 use App\Model\Comment;
 use App\Service\CommentService;
+use App\Service\FileService;
 use Nette;
 use Nette\Application\UI;
 use Nette\Application\UI\Form;
@@ -30,22 +31,29 @@ class PostPresenter extends BasePresenter
     private $commentService;
 
     /**
+     * @var $fileService FileService
+     */
+    private $fileService;
+
+    /**
      * PostPresenter constructor.
      * @param PostService $postService
      * @param SubjectService $subjectService
      * @param CommentService $commentService
+     * @param FileService $fileService
      */
-    public function __construct(PostService $postService, SubjectService $subjectService, CommentService $commentService)
+    public function __construct(PostService $postService, SubjectService $subjectService, CommentService $commentService, FileService $fileService)
     {
         $this->postService = $postService;
         $this->subjectService = $subjectService;
         $this->commentService = $commentService;
+        $this->fileService = $fileService;
     }
 
     protected function createComponentPostForm()
     {
         $userId = $this->user->getIdentity()->getId();
-        $subjects = $this->subjectService->getSubjectFromTS($userId);
+        $subjects = $this->subjectService->getSubjectFromTStoSelect($userId);
 
         $form = new UI\Form;
         $form->addSelect('subject', 'Predmet:', $subjects)
@@ -53,7 +61,6 @@ class PostPresenter extends BasePresenter
         $form->addTextArea('content', 'Obsah:')
             ->addRule(Form::MAX_LENGTH, 'Komentár je príliš dlhý.', 5000)
             ->setRequired('Zadajte obsah príspevku');
-        $form->addUpload('link', 'Súbor');
         $form->addHidden('postId');
         $form->addSubmit('post', 'Ulozit');
         $form->onSuccess[] = array($this, 'postFormSucceeded');
@@ -66,11 +73,6 @@ class PostPresenter extends BasePresenter
         $post = new Post();
 
         $values = $form->getValues();
-        if ($values->postId == null) {
-            $filename = $values->link->getSanitizedName();
-            $values->link->move(WWW_DIR . "/../files/$filename");
-            $post->setLink($filename);
-        }
         
         $post->userId = $this->user->getIdentity()->getId();
         
@@ -102,6 +104,8 @@ class PostPresenter extends BasePresenter
             $this->error('Příspěvek nebyl nalezen');
         }
         $this['postForm']->setDefaults($post);
+        $this->template->backlink = $this->getParameter('backlink');
+        $this->template->postId = $this->getParameter('postId');
     }
 
     protected function createComponentTeacherSubjectForm()
@@ -118,7 +122,7 @@ class PostPresenter extends BasePresenter
             $form->onSuccess[] = array($this, 'teacherSubjectFormSucceeded');
             return $form;
         } else {
-            throw new InvalidStateException("Študen nemá právo vyberať si predmet.");
+            throw new InvalidStateException("Študent nemá právo vyberať si predmet.");
         }
     }
 
@@ -132,13 +136,6 @@ class PostPresenter extends BasePresenter
 
         $this->flashMessage('Predmet bol úspešne pridaný.');
         $this->redirect('Homepage:');
-    }
-
-    public function renderOnePostAndComments($postId)
-    {
-        $this->template->post = $this->postService->getOnePost($postId);
-
-        $this->template->comments = $this->commentService->getComments($postId);
     }
 
     protected function createComponentCommentForm()
@@ -171,5 +168,66 @@ class PostPresenter extends BasePresenter
         $this->flashMessage('Komentár bol úspešne pridaný.');
         $this->redirect('this');
     }
+    
+    public function renderOnePostAndComments($postId)
+    {
+        $userId = $this->user->getIdentity()->getId();
+        $this->template->post = $this->postService->getOnePost($postId, $userId);
+        $this->template->comments = $this->commentService->getComments($postId);
+    }
 
+    public function renderAllFiles($postId)
+    {
+        $this->template->files = $this->fileService->getAllFiles($postId);
+        $this->template->backlink = $this->getParameter('backlink');
+        $this->template->postId = $this->getParameter('postId');
+    }
+
+    public function actionAddFile($postId)
+    {
+        $this->template->backlink = $this->getParameter('backlink');
+        $this['addFileForm']->setDefaults(array('postId' => $postId));
+    }
+
+    protected function createComponentAddFileForm()
+    {
+        $form = new Form();
+
+        $form->addHidden('postId');
+        $form->addUpload('file', 'Súbory:')
+            ->addRule(Form::MAX_FILE_SIZE, 'Maximálna veľkosť súboru je 5MB', 5*1024*1024)
+            ->setRequired('Vyberte súbor');
+        $form->addSubmit('save', 'Uložiť');
+        $form->onSuccess[] = array($this, 'addFileFormSucceeded');
+
+        return $form;
+    }
+
+    public function addFileFormSucceeded($form)
+    {
+        $values = $form->getValues();
+
+        $this->fileService->addFile($values->postId, $values->file);
+
+        $this->flashMessage('Príloha bola úspešne pridaná.');
+        $this->redirect("Post:allFiles", array('postId' => $values->postId));
+    }
+
+    public function actionLike($postId)
+    {
+        $userId = $this->user->getIdentity()->getId();
+        $this->postService->like($userId, $postId);
+
+        $this->flashMessage('K príspevku bol pridaný váš Like.');
+        $this->redirect('Post:onePostAndComments', array('postId' => $postId));
+    }
+
+    public function actionDislike($postId)
+    {
+        $userId = $this->user->getIdentity()->getId();
+        $this->postService->dislike($userId, $postId);
+
+        $this->flashMessage('Z príspevku bol odobratý váš Like.');
+        $this->redirect('Post:onePostAndComments', array('postId' => $postId));
+    }
 }

@@ -50,16 +50,53 @@ class UserService extends Object
 
     }
 
-    /**
-     * @param $userId integer
-     * @return User
-     */
-    public function getUser($userId) {
-        /**
-         * @var $userRow IRow
-         */
-        $userRow = $this->userTable->get($userId);
-        $user = User::fromRow($userRow);
-        return $userRow;
+    public function GetUserProfil($userId)
+    {
+        $sql = "SELECT u.*, f.* FROM User u, User_to_User f WHERE u.userId = $userId AND ((f.userId1 = $userId OR f.userId2 = $userId) AND f.accepted IS NULL)";
+        $loggedUser = $this->database->query($sql)->fetch();
+        
+        return $loggedUser;
+    }
+
+    public function addUserToUser($userId1, $userId2)
+    {
+        $sql = "SELECT COUNT(*) FROM User_to_User WHERE (userId1 = $userId1 AND userId2 = $userId2) 
+                OR (userId1 = $userId2 AND userId2 = $userId1)";
+        $condition = $this->database->query($sql)->fetch();
+
+        if ($condition != true) {
+            $this->database->table('User_to_User')->insert(array(
+                'userId1' => $userId1,
+                'userId2' => $userId2
+            ));
+        } else {
+            throw new Exception("Pouzivatelia s tymito userId uz maju priatelstvo");
+        }
+    }
+    
+    public function deleteUserToUser($userId1, $userId2)
+    {
+        $sql = "SELECT COUNT(*) FROM User_to_User WHERE (userId1 = $userId1 AND userId2 = $userId2) 
+                OR (userId1 = $userId2 AND userId2 = $userId1)";
+        $condition = $this->database->query($sql)->fetch();
+
+        if ($condition == true) {
+            $this->database->table('User_to_User')->where(array('userId1' => $userId1, 'userId2' => $userId2))->delete($userId1, $userId2);
+        } else {
+            throw new Exception("Pouzivatelia s tymito userId nemaju priatelstvo");
+        }
+    }
+
+    public function acceptUserToUser($userId1, $userId2, $accepted)
+    {
+        $sql = "SELECT COUNT(*) FROM User_to_User WHERE (userId1 = $userId1 AND userId2 = $userId2) 
+                OR (userId1 = $userId2 AND userId2 = $userId1)";
+        $condition = $this->database->query($sql)->fetch();
+        
+        if ($condition == true){
+            $this->database->table('User_to_User')->where(array('userId1' => $userId1, 'userId2' => $userId2))->update($userId1, $userId2, $accepted);
+        } else {
+            throw new Exception("Pouzivatelia s tymito userId nemaju priatelstvo");
+        }
     }
 }

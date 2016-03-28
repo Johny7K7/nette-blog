@@ -25,10 +25,13 @@ class PostService extends Object
     /**
      * @param ArrayList[Post] $user
      */
-    public function getAllPosts()
+    public function getAllPosts($userId)
     {
-        $sql = "SELECT p.*, s.title, u.username FROM Post p, Subject s, User u WHERE (p.subjectId = s.subjectId) 
-                AND (p.userId = u.userId) ORDER BY created_at DESC";
+        $sql = "SELECT p.*, s.title, u.username, 
+                (SELECT COUNT(*) FROM User_to_Post_Like l WHERE (l.postId = p.postId AND l.userId = $userId)) as 'isLike', 
+                (SELECT COUNT(*) FROM Comment c WHERE (c.postId = p.postId)) as 'countComment', 
+                (SELECT COUNT(*) FROM User_to_Post_Like l WHERE (l.postId = p.postId)) as 'countLike' 
+                FROM Post p, Subject s, User u WHERE (p.subjectId = s.subjectId) AND (p.userId = u.userId)";
         $posts = $this->database->query($sql)->fetchAll();
         
         return $posts;
@@ -67,13 +70,30 @@ class PostService extends Object
         $row = $this->database->table('Teacher_Subject')->insert($ts);
     }
 
-    public function getOnePost($postId)
+    public function getOnePost($postId, $userId)
     {
-        $sql = "SELECT p.*, s.title, u.username FROM Post p, Subject s, User u WHERE (p.subjectId = s.subjectId) 
-                AND (p.userId = u.userId) AND postId = $postId";
+        $sql = "SELECT p.*, s.title, u.username, 
+                (SELECT COUNT(*) FROM File f WHERE (f.postId = p.postId)) as 'countFile', 
+                (SELECT COUNT(*) FROM User_to_Post_Like l WHERE (l.postId = p.postId AND l.userId = $userId)) as 'isLike', 
+                (SELECT COUNT(*) FROM Comment c WHERE (c.postId = p.postId)) as 'countComment', 
+                (SELECT COUNT(*) FROM User_to_Post_Like l WHERE (l.postId = p.postId)) as 'countLike' 
+                FROM Post p, Subject s, User u WHERE (p.subjectId = s.subjectId) AND (p.userId = u.userId) AND (p.postId = $postId)";
         $post = $this->database->query($sql)->fetch();
         
         return $post;
+    }
+
+    public function like($userId, $postId)
+    {
+        $this->database->table('User_to_Post_Like')->insert(array(
+            'userId' => $userId,
+            'postId' => $postId,
+        ));
+    }
+
+    public function dislike($userId, $postId)
+    {
+        $this->database->table('User_to_Post_Like')->where(array("userId" => $userId, "postId" => $postId))->delete($userId, $postId);
     }
     
 }

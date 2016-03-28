@@ -30,6 +30,8 @@ services:
 			- addRole('guest')
 			- addResource('Homepage')
 			- addResource('Sign')
+			- addResource('Teacher')
+			- addResource('Post')
 			- allow('teacher', 'Homepage')
 			- allow('student', 'Homepage')
 			- allow('admin', 'Homepage')
@@ -38,12 +40,21 @@ services:
 			- allow('student', 'Sign')
 			- allow('admin', 'Sign')
 			- allow('guest', 'Sign')
+			- allow('teacher', 'Post')
+			- allow('student', 'Post')
+			- allow('admin', 'Post')
+			- allow('guest', 'Post')
+			- allow('teacher', 'Teacher')
+			- allow('student', 'Teacher')
+			- allow('admin', 'Teacher')
+			- allow('guest', 'Teacher')
 	- App\Forms\FormFactory
 	- App\Forms\SignFormFactory
 	- App\Service\PostService
 	- App\Service\UserService
 	- App\Service\CommentService
 	- App\Service\SubjectService
+	- App\Service\FileService
 	#router: App\RouterFactory::createRouter
 # TODO: disables cache, delete in production mode !!!
 	cacheStorage:

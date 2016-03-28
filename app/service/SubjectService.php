@@ -41,6 +41,11 @@ class SubjectService extends Object
         $this->database->table(Subject::TABLE)->where('subjectId', $subject->subjectId)->delete($subject);
     }
 
+    public function updateAboutSubject($subjectId, $userId, $about)
+    {
+        $this->database->table('Teacher_Subject')->where(array("userId" => $userId, "subjectId" => $subjectId))->update(array('aboutSubject' => $about));
+    }
+
     public function getAllSubjects()
     {
         $sql = "SELECT subjectId, title FROM Subject";
@@ -53,7 +58,7 @@ class SubjectService extends Object
         return $subjects;
     }
 
-    public function getSubjectFromTS($userId)
+    public function getSubjectFromTStoSelect($userId)
     {
         $sql = "SELECT subjectId, title FROM Subject WHERE subjectId IN (SELECT subjectId FROM Teacher_Subject WHERE userId = $userId)";
 
@@ -64,11 +69,28 @@ class SubjectService extends Object
 
         return $subjects;
     }
-
-    public function getPostsAsSubjects($subjectId)
+    
+    public function getSubjectFromTStoTable($userId)
     {
-        $sql = "SELECT p.*, s.title, u.username FROM Post p, Subject s, User u WHERE ((p.subjectId = s.subjectId) 
-                AND (p.userId = u.userId) AND (p.subjectId = $subjectId)) ORDER BY created_at DESC";
-        $posts = $this->database->query($sql)->fetchAll();
+        $sql = "SELECT s.subjectId, s.title, t.aboutSubject, u.userId FROM Subject s, Teacher_Subject t, User u 
+                WHERE s.subjectId = t.subjectId AND u.userId = t.userId AND u.userId = $userId";
+
+        $subjects = $this->database->query($sql)->fetchAll();
+
+        return $subjects;
     }
+
+    public function getSubjectFromTStoSelectAboutNull($userId, $subjectId)
+    {
+        $sql = "SELECT s.subjectId, s.title, t.aboutSubject, u.userId FROM Subject s, Teacher_Subject t, User u 
+                WHERE s.subjectId = t.subjectId AND u.userId = t.userId AND u.userId = $userId AND s.subjectId = $subjectId";
+
+        $subjects = array();
+        foreach($this->database->query($sql)->fetchAll() as $subject) {
+            $subjects[$subject->subjectId] = $subject->title;
+        }
+
+        return $subjects;
+    }
+
 }

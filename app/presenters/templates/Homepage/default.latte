@@ -12,6 +12,10 @@
         <a n:if="$user->getIdentity()->teacher == true" n:href="Post:postForm">Pridanie prispevku</a>
     </div>
 
+    <div>
+        <a n:href="Teacher:loggedUserProfil">Profil</a>
+    </div>
+
     <div n:foreach="$posts as $post" class="post">
 
         <h2>{$post->username}</h2> <p><a n:href="Post:onePostAndComments $post->postId">--></a></p>
@@ -20,8 +24,16 @@
 
         <div>{$post->content}</div>
 
-        <div n:if="$post->link">{$post->link}</div>
+        <hr>
 
+        <div>
+            Komentárov: {$post->countComment}   Likov: {$post->countLike}
+            {if $post->isLike == 1}
+                <a n:href="Homepage:dislike, postId => $post->postId" class="unlike">Dislike</a>
+            {else}
+                <a n:href="Homepage:like, postId => $post->postId" class="like">Like</a>
+            {/if}
+        </div>
         <br>
         <hr>
     </div>

@@ -13,14 +13,30 @@
     <div class="post">
         {if !$post} <h2>Tento príspevok neexistuje.</h2>
         {else}
-            <a n:href="Post:changePost $post->postId">upravit</a>
-            <h2>{$post->username}</h2>
+            <a n:if="$post->userId == $user->getIdentity()->getId()"
+                    n:href="Post:changePost $post->postId, backlink => onePostAndComments, postId => $post->postId">upravit</a>
+            <a n:href="Post:allFiles $post->postId, backlink => onePostAndComments, postId => $post->postId">Prílohy</a> ({$post->countFile})
+            <h2>
+                {if $post->userId != $user->getIdentity()->userId}
+                    <a n:href="Teacher:userProfil userId => $post->userId">{$post->username}</a>
+                {else}
+                    <a n:href="Teacher:loggedUserProfil userId => $post->userId">{$post->username}</a>
+                {/if}
+            </h2>
             <h3>{$post->title}</h3>
             <div class="date">{$post->created_at|date:'j.n.y, G:i'}</div>
 
             <div>{$post->content}</div>
+            <br>
+            <div>
+                Komentárov: {$post->countComment}   Likov: {$post->countLike}
+                {if $post->isLike == 1}
+                    <a n:href="Post:dislike, postId => $post->postId" class="unlike">Dislike</a>
+                {else}
+                    <a n:href="Post:like, postId => $post->postId" class="like">Like</a>
+                {/if}
+            </div>
 
-            <div n:if="$post->link">{$post->link}</div>
         {/if}
         <br>
         <hr>

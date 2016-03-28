@@ -1,0 +1,26 @@
+{block heading}
+    <h1 n:block="title">Vitejte v Informačnom systéme pre zdieľanie študijných materiálov.</h1>
+{/block}
+
+{block content}
+
+    <h2>Prílohy</h2>
+
+    <a n:href="Post:{$backlink} $postId"><-- Späť</a>
+
+    <a n:href="Post:addFile postId => $postId">Pridať prílohu</a>
+
+    <ol>
+        <div n:foreach="$files as $file">
+
+            <li>{$file->link}</li>
+
+        </div>
+    </ol>
+
+
+{/block}
+
+
+
+

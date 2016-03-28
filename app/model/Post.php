@@ -31,11 +31,6 @@ class Post extends Object implements \IteratorAggregate
     private $content;
 
     /**
-     * @var $link string
-     */
-    private $link;
-
-    /**
      * @var $subjectId integer
      */
     private $subjectId;
@@ -54,7 +49,6 @@ class Post extends Object implements \IteratorAggregate
         $post->userId = $row->userId;
         $post->created_at = $row->created_at;
         $post->content = $row->content;
-        $post->link = $row->link;
         $post->subjectId = $row->subjectId;
         return $post;
     }
@@ -108,22 +102,6 @@ class Post extends Object implements \IteratorAggregate
     }
 
     /**
-     * @return string
-     */
-    public function getLink()
-    {
-        return $this->link;
-    }
-
-    /**
-     * @param string $link
-     */
-    public function setLink($link)
-    {
-        $this->link = $link;
-    }
-
-    /**
      * @return int
      */
     public function getUserId()
@@ -168,7 +146,6 @@ class Post extends Object implements \IteratorAggregate
             'postId' => $this->postId,
             'userId' => $this->userId,
             'content' => $this->content,
-            'link' => $this->link,
             'subjectId' => $this->subjectId,
         ));
     }

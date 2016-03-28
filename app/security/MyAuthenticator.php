@@ -25,7 +25,7 @@ class MyAuthenticator extends Nette\Object implements NS\IAuthenticator
             throw new NS\AuthenticationException('Nesprávne heslo.');
         }
 
-        return new NS\Identity($row->userId, $row->teacher, array(
+        return new NS\Identity($row->userId, $row->teacher ? 'teacher' : 'student', array(
             'username' => $row->username,
             'email' => $row->email,
             'gender' => $row->gender,

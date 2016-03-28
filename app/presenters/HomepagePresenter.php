@@ -25,13 +25,25 @@ class HomepagePresenter extends BasePresenter
 
 	public function renderDefault()
 	{
-		$this->template->posts = $this->postService->getAllPosts();
+		$userId = $this->user->getIdentity()->getId();
+		$this->template->posts = $this->postService->getAllPosts($userId);
 	}
-
-	protected function createComponentPostsAsSubjectForm()
+	
+	public function actionLike($postId)
 	{
+		$userId = $this->user->getIdentity()->getId();
+		$this->postService->like($userId, $postId);
 
+		$this->flashMessage('K príspevku bol pridaný váš Like.');
+		$this->redirect('Homepage:');
 	}
 
+	public function actionDislike($postId)
+	{
+		$userId = $this->user->getIdentity()->getId();
+		$this->postService->dislike($userId, $postId);
 
+		$this->flashMessage('Z príspevku bol odobratý váš Like.');
+		$this->redirect('Homepage:');
+	}
 }
