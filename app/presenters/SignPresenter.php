@@ -2,6 +2,7 @@
 
 namespace App\Presenters;
 
+use App\Service\FileService;
 use Nette;
 use Nette\Application\UI;
 use Nette\Application\UI\Form;
@@ -20,14 +21,21 @@ class SignPresenter extends BasePresenter
      */
     private $userService;
 
-    /**
-     * SignPresenter constructor.
-     * @param UserService $userService
-     */
-    public function __construct(UserService $userService)
-    {
-        $this->userService = $userService;
-    }
+	/**
+	 * @var $fileService FileService
+	 */
+	private $fileService;
+
+	/**
+	 * SignPresenter constructor.
+	 * @param UserService $userService
+	 * @param FileService $fileService
+	 */
+	public function __construct(UserService $userService, FileService $fileService)
+	{
+		$this->userService = $userService;
+		$this->fileService = $fileService;
+	}
 
 	public function actionIn()
 	{
@@ -79,7 +87,7 @@ class SignPresenter extends BasePresenter
 	public function registrationFormSucceeded($form)
 	{
 		$values = $form->getValues();
-
+		
 		$user = new User();
 
         //$birthdate = strtotime($values->birthdate);

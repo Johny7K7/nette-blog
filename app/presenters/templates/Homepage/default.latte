@@ -4,38 +4,47 @@
 
 {block content}
 
-    <div>
-        <a n:if="$user->getIdentity()->teacher == true" n:href="Post:subject">Pridať predmet</a>
-    </div>
-
-    <div>
+    <div class="link">
         <a n:if="$user->getIdentity()->teacher == true" n:href="Post:postForm">Pridanie prispevku</a>
+        <a n:href="Teacher:userProfile $user->getIdentity()->getId()">Profil</a>
     </div>
 
-    <div>
-        <a n:href="Teacher:loggedUserProfil">Profil</a>
-    </div>
+    <br>
 
     <div n:foreach="$posts as $post" class="post">
+        <div class="post_content">
+            <div>
+                <p class="link"><a n:href="Post:onePostAndComments $post->postId" style="float: right; margin-top: 5px; margin-right: 5px">Detail --></a></p>
+                <img src="pictures/{$post->picture}" alt="profilovka" style="width:100px; margin: 6px;">
+                <h2>{$post->username}</h2>
+                Viditeľnosť:
+                {if $post->visible == 1} Iba ja
+                {elseif $post->visible == 2} Kolegovia
+                {elseif $post->visible == 3} Žiaci
+                {else} Všetci
+                {/if}
+            </div>
 
-        <h2>{$post->username}</h2> <p><a n:href="Post:onePostAndComments $post->postId">--></a></p>
-        <h3>{$post->title}</h3>
-        <div class="date">{$post->created_at|date:'j.n.y, G:i'}</div>
+            <h3>{$post->title}</h3>
+            <div class="date">{$post->created_at|date:'j.n.y, G:i'}</div>
+            <br>
 
-        <div>{$post->content}</div>
+            <div>{$post->content}</div>
 
-        <hr>
+            <hr>
 
-        <div>
-            Komentárov: {$post->countComment}   Likov: {$post->countLike}
-            {if $post->isLike == 1}
-                <a n:href="Homepage:dislike, postId => $post->postId" class="unlike">Dislike</a>
-            {else}
-                <a n:href="Homepage:like, postId => $post->postId" class="like">Like</a>
-            {/if}
+            <div>
+                Prílohy(súbory/linky): {$post->countFile}/{$post->countLink},
+                Komentárov: {$post->countComment},    Likov: {$post->countLike}
+                {if $post->isLike == 1}
+                    <a n:href="Homepage:dislike, postId => $post->postId" class="unlike">Dislike</a>
+                {else}
+                    <a n:href="Homepage:like, postId => $post->postId" class="like">Like</a>
+                {/if}
+            </div>
+            <br>
+            <hr>
         </div>
-        <br>
-        <hr>
     </div>
 
 {/block}

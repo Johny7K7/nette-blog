@@ -32,6 +32,7 @@ services:
 			- addResource('Sign')
 			- addResource('Teacher')
 			- addResource('Post')
+			- addResource('File')
 			- allow('teacher', 'Homepage')
 			- allow('student', 'Homepage')
 			- allow('admin', 'Homepage')
@@ -48,6 +49,10 @@ services:
 			- allow('student', 'Teacher')
 			- allow('admin', 'Teacher')
 			- allow('guest', 'Teacher')
+			- allow('teacher', 'File')
+			- allow('student', 'File')
+			- allow('admin', 'File')
+			- allow('guest', 'File')
 	- App\Forms\FormFactory
 	- App\Forms\SignFormFactory
 	- App\Service\PostService

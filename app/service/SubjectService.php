@@ -46,9 +46,9 @@ class SubjectService extends Object
         $this->database->table('Teacher_Subject')->where(array("userId" => $userId, "subjectId" => $subjectId))->update(array('aboutSubject' => $about));
     }
 
-    public function getAllSubjects()
+    public function getAllSubjects($userId)
     {
-        $sql = "SELECT subjectId, title FROM Subject";
+        $sql = "SELECT subjectId, title FROM Subject WHERE subjectId NOT IN (SELECT subjectId FROM Teacher_Subject WHERE userId = $userId)";
 
         $subjects = array();
         foreach($this->database->query($sql)->fetchAll() as $subject) {

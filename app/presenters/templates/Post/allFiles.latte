@@ -4,16 +4,28 @@
 
 {block content}
 
-    <h2>Prílohy</h2>
+    <div class="link">
+        <a n:href="Post:onePostAndComments $postId"><-- Späť</a>
+        <a n:if="$userId == $user->getIdentity()->getId()" n:href="Post:addFile postId => $postId">Pridať súbor</a>
+        <a n:if="$userId == $user->getIdentity()->getId()" n:href="Post:addLink postId => $postId">Pridať link na stránku</a>
+    </div>
 
-    <a n:href="Post:{$backlink} $postId"><-- Späť</a>
-
-    <a n:href="Post:addFile postId => $postId">Pridať prílohu</a>
+    <h2>Prílohy (súbory)</h2>
 
     <ol>
         <div n:foreach="$files as $file">
 
-            <li>{$file->link}</li>
+            <li>{$file->filename} - <a n:href="File:download $file->fileId">Stiahnuť</a></li>
+
+        </div>
+    </ol>
+
+    <h2>Prílohy (linky na stránky)</h2>
+
+    <ol>
+        <div n:foreach="$links as $link">
+
+            <li>{$link->title} - <a href="{$link->link}">{$link->link}</a></li>
 
         </div>
     </ol>

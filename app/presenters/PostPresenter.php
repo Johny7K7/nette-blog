@@ -5,6 +5,7 @@ namespace App\Presenters;
 use App\Model\Comment;
 use App\Service\CommentService;
 use App\Service\FileService;
+use App\Service\UserService;
 use Nette;
 use Nette\Application\UI;
 use Nette\Application\UI\Form;
@@ -36,33 +37,49 @@ class PostPresenter extends BasePresenter
     private $fileService;
 
     /**
+     * @var $userService UserService
+     */
+    private $userService;
+
+    /**
      * PostPresenter constructor.
      * @param PostService $postService
      * @param SubjectService $subjectService
      * @param CommentService $commentService
      * @param FileService $fileService
+     * @param UserService $userService
      */
-    public function __construct(PostService $postService, SubjectService $subjectService, CommentService $commentService, FileService $fileService)
+    public function __construct(PostService $postService, SubjectService $subjectService, CommentService $commentService, FileService $fileService, UserService $userService)
     {
         $this->postService = $postService;
         $this->subjectService = $subjectService;
         $this->commentService = $commentService;
         $this->fileService = $fileService;
+        $this->userService = $userService;
     }
-
+    
     protected function createComponentPostForm()
     {
         $userId = $this->user->getIdentity()->getId();
         $subjects = $this->subjectService->getSubjectFromTStoSelect($userId);
+        
+        $visible = array(
+            1 => 'Iba mne',
+            2 => 'Kolegom (Učitelia - priatelia)',
+            3 => 'Žiakom',
+            4 => 'Všetkým',
+        );
 
         $form = new UI\Form;
         $form->addSelect('subject', 'Predmet:', $subjects)
             ->setRequired('Vyberte predmet zo zoznamu.');
-        $form->addTextArea('content', 'Obsah:')
-            ->addRule(Form::MAX_LENGTH, 'Komentár je príliš dlhý.', 5000)
+        $form->addTextArea('content', 'Obsah príspevku:')
+            ->addRule(Form::MAX_LENGTH, 'Príspevok je príliš dlhý.', 5000)
             ->setRequired('Zadajte obsah príspevku');
+        $form->addRadioList('visible', 'Príspevok sa zobrazí:', $visible)
+            ->setRequired('Vyberte viditeľnosť príspevku.');
         $form->addHidden('postId');
-        $form->addSubmit('post', 'Ulozit');
+        $form->addSubmit('post', 'Uložiť');
         $form->onSuccess[] = array($this, 'postFormSucceeded');
         return $form;
     }
@@ -78,6 +95,7 @@ class PostPresenter extends BasePresenter
         
         $post->setPostId($values->postId);
         $post->setContent($values->content);
+        $post->setVisible($values->visible);
         $post->setSubjectId($values->subject);
 
         if ($values->postId) {
@@ -99,10 +117,12 @@ class PostPresenter extends BasePresenter
 
     public function actionChangePost($postId)
     {
-        $post = $this->postService->getOnePost($postId);
+        $userId = $this->user->getIdentity()->getId();
+        $post = $this->postService->getOnePost($postId, $userId);
         if (!$post) {
             $this->error('Příspěvek nebyl nalezen');
-        }
+        }     
+                
         $this['postForm']->setDefaults($post);
         $this->template->backlink = $this->getParameter('backlink');
         $this->template->postId = $this->getParameter('postId');
@@ -112,8 +132,10 @@ class PostPresenter extends BasePresenter
     {
         if ($this->user->getIdentity()->teacher == 1) {
             $form = new UI\Form;
+            
+            $userId = $this->user->getIdentity()->getId();
 
-            $subjects = $this->subjectService->getAllSubjects();
+            $subjects = $this->subjectService->getAllSubjects($userId);
 
             $form->addSelect('subject', 'Predmet:', $subjects)
                 ->setRequired('Vyberte predmet zo zoznamu');
@@ -136,6 +158,12 @@ class PostPresenter extends BasePresenter
 
         $this->flashMessage('Predmet bol úspešne pridaný.');
         $this->redirect('Homepage:');
+    }
+    
+    public function renderSubject()
+    {
+        $userId = $this->user->getIdentity()->getId();
+        $this->template->userId = $userId;
     }
 
     protected function createComponentCommentForm()
@@ -172,19 +200,34 @@ class PostPresenter extends BasePresenter
     public function renderOnePostAndComments($postId)
     {
         $userId = $this->user->getIdentity()->getId();
-        $this->template->post = $this->postService->getOnePost($postId, $userId);
-        $this->template->comments = $this->commentService->getComments($postId);
+        $post = $this->postService->getOnePost($postId, $userId);
+        $origin = $this->userService->originOfFriend($userId, $post->userId);
+        $friend = $this->userService->isFriend($post->userId, $this->user->getIdentity()->getId());
+        $link = 'pictures' . DIRECTORY_SEPARATOR . $post->picture;
+        $comments = $this->commentService->getComments($postId);
+
+        $addition = $post->countFile + $post->countLink;
+
+        $this->template->post = $post;
+        $this->template->origin = $origin;
+        $this->template->comments = $comments;
+        $this->template->isFriend = $friend;
+        $this->template->link = $link;
+        $this->template->addition = $addition;
     }
 
     public function renderAllFiles($postId)
     {
         $this->template->files = $this->fileService->getAllFiles($postId);
+        $this->template->links = $this->fileService->getAllLinks($postId);
         $this->template->backlink = $this->getParameter('backlink');
         $this->template->postId = $this->getParameter('postId');
+        $this->template->userId = $this->getParameter('userId');
     }
 
     public function actionAddFile($postId)
     {
+        $this->template->postId = $postId;
         $this->template->backlink = $this->getParameter('backlink');
         $this['addFileForm']->setDefaults(array('postId' => $postId));
     }
@@ -229,5 +272,42 @@ class PostPresenter extends BasePresenter
 
         $this->flashMessage('Z príspevku bol odobratý váš Like.');
         $this->redirect('Post:onePostAndComments', array('postId' => $postId));
+    }
+
+    public function actionAddLink($postId)
+    {
+        $this->template->postId = $postId;
+        $this['addLinkForm']->setDefaults(array('postId' => $postId));
+    }
+    
+    protected function createComponentAddLinkForm()
+    {
+        $form = new Form();
+        
+        $form->addHidden('postId');
+        $form->addText('title', 'Názov stránky a popis:')
+            ->setRequired('Zadajte názov stránky.');
+        $form->addText('link', 'Link na stránku:')
+            ->setRequired('Zadajte link na stránku.');
+        $form->addSubmit('post', 'Uložiť');
+        $form->onSuccess[] = array($this, 'addLinkFormSucceeded');
+        
+        return $form;
+    }
+    
+    public function addLinkFormSucceeded($form)
+    {
+        $values = $form->getValues();
+        
+        $link = array(
+            'postId' => $values->postId,
+            'title' => $values->title,
+            'link' => $values->link
+        );
+        
+        $this->fileService->addLink($link);
+
+        $this->flashMessage('Odkaz na stránku bol úspešne pridaný.');
+        $this->redirect("Post:allFiles", array('postId' => $values->postId));
     }
 }

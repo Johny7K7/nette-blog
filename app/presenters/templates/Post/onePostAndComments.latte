@@ -4,53 +4,68 @@
 
 {block content}
 
-
-
-    <div>
-        <a n:href="Homepage:"><-- Späť</a>
-    </div>
-
     <div class="post">
-        {if !$post} <h2>Tento príspevok neexistuje.</h2>
-        {else}
-            <a n:if="$post->userId == $user->getIdentity()->getId()"
-                    n:href="Post:changePost $post->postId, backlink => onePostAndComments, postId => $post->postId">upravit</a>
-            <a n:href="Post:allFiles $post->postId, backlink => onePostAndComments, postId => $post->postId">Prílohy</a> ({$post->countFile})
-            <h2>
-                {if $post->userId != $user->getIdentity()->userId}
-                    <a n:href="Teacher:userProfil userId => $post->userId">{$post->username}</a>
-                {else}
-                    <a n:href="Teacher:loggedUserProfil userId => $post->userId">{$post->username}</a>
-                {/if}
-            </h2>
-            <h3>{$post->title}</h3>
-            <div class="date">{$post->created_at|date:'j.n.y, G:i'}</div>
-
-            <div>{$post->content}</div>
-            <br>
-            <div>
-                Komentárov: {$post->countComment}   Likov: {$post->countLike}
-                {if $post->isLike == 1}
-                    <a n:href="Post:dislike, postId => $post->postId" class="unlike">Dislike</a>
-                {else}
-                    <a n:href="Post:like, postId => $post->postId" class="like">Like</a>
-                {/if}
+        <div class="post_content">
+            <div class="link" style="float: right; margin-top: 5px; margin-right: 5px">
+                <a n:href="Homepage:"><-- Späť</a>
+                <a n:if="$post->userId == $user->getIdentity()->getId()"
+                        n:href="Post:changePost $post->postId, backlink => onePostAndComments, postId => $post->postId">Upraviť</a>
             </div>
+            {if !$post} <h2>Tento príspevok neexistuje.</h2>
+            {else}
 
-        {/if}
-        <br>
-        <hr>
+                <div n:if="$post->picture != null">
+                    <img src="{$link}" alt="profilovka" style="width:100px; margin: 6px; float: left">
+                </div>
 
-        <h3>Vložiť komentár</h3>
-        {control commentForm}
+                <h2><a style="margin-left: 5px" n:href="Teacher:userProfile userId => $post->userId, postId => $post->postId">{$post->username}</a>
+                    {if $isFriend->friend == 1} ({$origin}){/if}</h2>
 
-        <hr>
+                <br><br>
+                <div>
+                    Viditeľnosť:
+                    {if $post->visible == 1} Iba ja
+                    {elseif $post->visible == 2} Kolegovia
+                    {elseif $post->visible == 3} Žiaci
+                    {else} Všetci
+                    {/if}
+                </div>
+
+                <h3>{$post->title}</h3>
+                <div class="date">{$post->created_at|date:'j.n.y, G:i'}</div>
+                <br>
+
+                <div>{$post->content}</div>
+                <br>
+                <div>
+                    <a n:href="Post:allFiles $post->postId, backlink => onePostAndComments, postId => $post->postId, userId => $post->userId">Prílohy</a> ({$addition}),
+                    Komentárov: {$post->countComment},    Likov: {$post->countLike}
+                    {if $post->isLike == 1}
+                        <a n:href="Post:dislike, postId => $post->postId" class="unlike">Dislike</a>
+                    {else}
+                        <a n:href="Post:like, postId => $post->postId" class="like">Like</a>
+                    {/if}
+                </div>
+
+            {/if}
+            <br>
+            <hr>
+
+            <h3>Vložiť komentár</h3>
+            {control commentForm}
+
+            <hr>
+        </div>
     </div>
     <div n:foreach="$comments as $comment" class="comment">
-        <h4>{$comment->username}</h4>
-        <div class="date">{$comment->created_at|date:'j.n.y, G:i'}</div>
-        <div>{$comment->content}<hr></div>
-
+        <div class="comment_content">
+            <div n:if="$post->picture != null">
+                <img src="pictures/{$comment->picture}" alt="profilovka" style="width:50px; margin: 6px;">
+            </div>
+            <h4>{$comment->username}</h4>
+            <div class="date">{$comment->created_at|date:'j.n.y, G:i'}</div>
+            <div>{$comment->content}<hr></div>
+        </div>
     </div>
 
 {/block}

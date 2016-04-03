@@ -31,6 +31,11 @@ class Post extends Object implements \IteratorAggregate
     private $content;
 
     /**
+     * @var $visible integer
+     */
+    private $visible;
+
+    /**
      * @var $subjectId integer
      */
     private $subjectId;
@@ -49,6 +54,7 @@ class Post extends Object implements \IteratorAggregate
         $post->userId = $row->userId;
         $post->created_at = $row->created_at;
         $post->content = $row->content;
+        $post->visible = $row->visible;
         $post->subjectId = $row->subjectId;
         return $post;
     }
@@ -120,6 +126,22 @@ class Post extends Object implements \IteratorAggregate
     /**
      * @return int
      */
+    public function getVisible()
+    {
+        return $this->visible;
+    }
+
+    /**
+     * @param int $visible
+     */
+    public function setVisible($visible)
+    {
+        $this->visible = $visible;
+    }
+    
+    /**
+     * @return int
+     */
     public function getSubjectId()
     {
         return $this->subjectId;
@@ -146,6 +168,7 @@ class Post extends Object implements \IteratorAggregate
             'postId' => $this->postId,
             'userId' => $this->userId,
             'content' => $this->content,
+            'visible' => $this->visible,
             'subjectId' => $this->subjectId,
         ));
     }

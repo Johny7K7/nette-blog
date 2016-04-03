@@ -48,7 +48,7 @@ class CommentService extends Object
     
     public function getComments($postId)
     {
-        $sql = "SELECT c.*, u.username FROM Comment c, User u WHERE c.postId = $postId AND c.userId = u.userId";
+        $sql = "SELECT c.*, u.username, u.picture FROM Comment c, User u WHERE c.postId = $postId AND c.userId = u.userId ORDER BY c.created_at DESC";
         $comment = $this->database->query($sql)->fetchAll();
         
         return $comment;

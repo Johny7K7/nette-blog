@@ -26,11 +26,24 @@ class FileService extends Object
     public function addFile($postId, $file)
     {
         $filename = $file->getSanitizedName();
-        $file->move(WWW_DIR . "/../files/$filename");
+        $link = time() . $filename;
+        $file->move(WWW_DIR . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . $link);
 
         $row = $this->database->table('File')->insert(array(
             'postId' => $postId,
-            'link' => $filename
+            'link' => $link,
+            'filename' => $filename
+        ));
+    }
+
+    public function addPicture($userId, $picture)
+    {
+        $file = $picture->getSanitizedName();
+        $filename = $userId . $file;
+        $picture->move(WWW_DIR . DIRECTORY_SEPARATOR . "pictures" . DIRECTORY_SEPARATOR . $filename);
+
+        $row = $this->database->table('User')->where(array('userId' => $userId))->update(array(
+            'picture' => $filename
         ));
     }
 
@@ -42,9 +55,23 @@ class FileService extends Object
         
         return $files;
     }
-
-    public function deleteFile($fileId, $postId)
+    
+    public function getFileById($fileId)
     {
+        return $this->database->table('File')->get($fileId);
+    }
 
+    public function addLink($link)
+    {
+        $this->database->table('Link')->insert($link);
+    }
+
+    public function getAllLinks($postId)
+    {
+        $sql = "SELECT l.*, p.userId, u.username FROM Link l, Post p, User u WHERE l.postId = p.postId AND l.postId = $postId 
+                AND p.userId = u.userId";
+        $links = $this->database->query($sql)->fetchAll();
+        
+        return $links;
     }
 }

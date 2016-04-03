@@ -1,0 +1,99 @@
+{block heading}
+    <h1 n:block="title">Vitejte v Informačnom systéme pre zdieľanie študijných materiálov.</h1>
+{/block}
+
+{block content}
+
+<div class="link">
+    {if $userId == $user->getIdentity()->getId()}
+    <a n:href="Homepage:"><-- Späť</a>
+    {else}
+    <a n:href="Post:onePostAndComments $postId"><-- Späť</a>
+    {/if}
+</div>
+
+<br>
+
+<div class="profil">
+
+    <div>
+        {if $userId != $user->getIdentity()->getId() AND $isRequest->request == 0 AND $isFriend->friend == 0}
+            <a n:href="Teacher:addUserToUser $userId, postId => $postId">Pridať priateľa</a>
+        {/if}
+        {if $userId != $user->getIdentity()->getId() AND $isRequest->request == 1 AND $isFriend->friend == 0}
+            Odoslaná žiadosť o priateľstvo
+        {/if}
+        {if $isFriend->friend == 1}S uživateľom Priatelia{/if}
+    </div>
+    <div>
+        {if $userId == $user->getIdentity()->getId()}
+            Počet žiadostí o priateľstvo:
+            {if $userProfile->countRequest > 0}
+            <a n:href="Teacher:requests userId => $userId">{$userProfile->countRequest}</a>
+                {else}{$userProfile->countRequest}
+            {/if}
+
+        {/if}
+    </div>
+
+    <div>
+        {if $userProfile->picture == null}
+        <a n:href="Teacher:addPicture $userProfile->userId, userId => $userProfile->userId">Pridať profilovú fotku</a>
+        {else}
+        <img src="{$link}" alt="profilovka" style="width:100px; margin: 6px;">
+        {/if}
+    </div>
+
+    <br>
+
+    <h2>{$userProfile->username}</h2>
+
+    <table class="profil" border="2">
+        <tr>
+            <td><b>Prezývka:</b></td>
+            <td> {$userProfile->nickname}</td>
+        </tr>
+        <tr>
+            <td><b>E-mail:</b></td>
+            <td> {$userProfile->email}</td>
+        </tr>
+        <tr>
+            <td><b>Dátum narodenia:</b></td>
+            <td> {$userProfile->birthdate|date:'j.n.Y'}</td>
+        </tr>
+    </table>
+
+    <br>
+
+
+    {if $userProfile->teacher != null}<h3>Predmety</h3>{/if}
+
+    <div class="link" n:if="$userId == $user->getIdentity()->getId()">
+        <a n:if="$user->getIdentity()->teacher == true" n:href="Post:subject">Pridať predmet</a>
+    </div>
+    <br>
+
+    <div class="about" n:if="$userProfile->teacher != null" n:foreach="$subjects as $subject">
+
+        <div class="about_contnet">
+            <h4>Predmet: {$subject->title} </h4>{if $subject->aboutSubject == null AND $userId == $user->getIdentity()->getId()}<a n:href="Teacher:aboutSubject subjectId => $subject->subjectId, title => $subject->title">Pridať o predmete</a>{/if}</div>
+        <div n:if="$subject->aboutSubject != null">O predmete: {$subject->aboutSubject}</div>
+
+        <br>
+        <hr>
+    </div>
+
+
+
+    <br>
+
+    {*<span class="link"><a n:href="Worker:changeAccount"><b>Upraviť profil</b></a></span>*}
+    {*<span class="link"><a n:href="Worker:changePassword"><b>Zmeniť heslo</b></a></span>*}
+
+    <div>
+
+        {/block}
+
+
+
+

@@ -3,6 +3,7 @@
 
 namespace App\Presenters;
 
+use App\Service\FileService;
 use App\Service\SubjectService;
 use Nette;
 use App\Service\UserService;
@@ -22,41 +23,51 @@ class TeacherPresenter extends BasePresenter
     private $subjectService;
 
     /**
+     * @var $fileService FileService
+     */
+    private $fileService;
+
+    /**
      * TeacherPresenter constructor.
      * @param UserService $userService
      * @param SubjectService $subjectService
+     * @param FileService $fileService
      */
-    public function __construct(UserService $userService, SubjectService $subjectService)
+    public function __construct(UserService $userService, SubjectService $subjectService, FileService $fileService)
     {
         $this->userService = $userService;
         $this->subjectService = $subjectService;
+        $this->fileService = $fileService;
     }
 
-    public function renderLoggedUserProfil()
-    {
-        $userId = $this->user->getIdentity()->getId(); 
-        
-        $loggedUser = $this->userService->GetUserProfil($userId);
-        
+    public function renderUserProfile($userId)
+    {        
+        $userProfile = $this->userService->getUserProfile($userId);
         $subjects = $this->subjectService->getSubjectFromTStoTable($userId);
         
-        $this->template->loggedUser = $loggedUser;
+        $link = 'pictures' . DIRECTORY_SEPARATOR . $userProfile->picture;
+        
+        $request = $this->userService->isRequest($userId, $this->user->getIdentity()->getId());
+        $friend = $this->userService->isFriend($userId, $this->user->getIdentity()->getId());
+
+        $this->template->userProfile = $userProfile;
+        $this->template->userId = $userId;
         $this->template->subjects = $subjects;
-    }
+        $this->template->backlink = $this->getParameter('backlink');
+        $this->template->postId = $this->getParameter('postId');
+        $this->template->isRequest = $request;
+        $this->template->isFriend = $friend;
+        $this->template->link = $link;
+//        print_r($request);
+//        exit();
 
-    public function renderUserProfil($userId)
-    {
-        $profil = $this->userService->GetUserProfil($userId);
-
-        $subjects = $this->subjectService->getSubjectFromTStoTable($userId);
-
-        $this->template->profil = $profil;
-        $this->template->subjects = $subjects;
     }
 
     public function actionAboutSubject($subjectId)
     {
         $this['aboutSubjectForm']->setDefaults(array('subjectId' => $subjectId));
+        $this->template->userId = $this->user->getIdentity()->getId();
+        $this->template->title = $this->getParameter('title');
     }
 
     protected function createComponentAboutSubjectForm()
@@ -82,15 +93,75 @@ class TeacherPresenter extends BasePresenter
         $this->subjectService->updateAboutSubject($values->subjectId, $userId, $values->about);
 
         $this->flashMessage('Poznámka o predmete bola úspešne pridaná.');
-        $this->redirect("Teacher:loggedUserProfil", array('userId' => $userId));
+        $this->redirect("Teacher:userProfile", array('userId' => $userId));
+    }
+    
+    public function renderRequests()
+    {
+        $userId = $this->user->getIdentity()->getId();
+        $requests = $this->userService->getAllRequests($userId);
+        
+        $this->template->requests = $requests;
+        $this->template->userId = $userId;
     }
     
     public function actionAddUserToUser($userId1)
     {
         $userId2 = $this->user->getIdentity()->getId();
-        
         $this->userService->addUserToUser($userId1, $userId2);
+        $postId = $this->getParameter('postId');
         
-        $this->redirect('Homepage:');
+        $this->template->postId = $postId;
+
+        $this->redirect('Teacher:userProfile', array('userId' => $userId1));
+    }
+
+    public function actionConfirmUserToUser($userId1)
+    {
+        $userId2 = $this->user->getIdentity()->getId();
+
+        $this->userService->acceptUserToUser($userId1, $userId2, true);
+
+        $this->redirect('Teacher:userProfile', array('userId' => $userId2));
+    }
+    
+    public function actionRejectUserToUser($userId1)
+    {
+        $userId2 = $this->user->getIdentity()->getId();
+
+        $this->userService->acceptUserToUser($userId1, $userId2, false);
+
+        $this->redirect('Teacher:userProfile', array('userId' => $userId2));
+    }
+
+    public function actionAddPicture($userId)
+    {
+        $user = $this->userService->getUserProfile($userId);
+        $this['addPictureForm']->setDefaults(array('userId' => $user->userId));
+        $this->template->userId = $this->getParameter('userId');
+    }
+
+    protected function createComponentAddPictureForm()
+    {
+        $form = new Form();
+
+        $form->addHidden('userId');
+        $form->addUpload('picture', 'Profilová fotka:')
+            ->addRule(Form::IMAGE, 'Profilová fotka musí byť obrázok vo formáte JPEG, PNG alebo GIF')
+            ->setRequired('Vložte profilovú fotku.');
+        $form->addSubmit('post', 'Vložiť');
+        $form->onSuccess[] = array($this, 'addPictureSucceeded');
+
+        return $form;
+    }
+
+    public function addPictureSucceeded($form)
+    {
+        $values = $form->getValues();
+
+        $this->fileService->addPicture($values->userId, $values->picture);
+
+        $this->flashMessage('Profilová fotka bola úspešne pridaná.');
+        $this->redirect("Teacher:userProfile", array('userId' => $values->userId));
     }
 }

@@ -1,0 +1,30 @@
+{block heading}
+    <h1 n:block="title">Vitejte v Informačnom systéme pre zdieľanie študijných materiálov.</h1>
+{/block}
+
+{block content}
+
+    <div class="link">
+        <a n:href="Teacher:userProfile $userId"><-- Späť</a>
+    </div>
+
+    <div n:foreach="$requests as $request">
+
+        <div>
+            {$request->username2}
+            {if $request->userId1 == $user->getIdentity()->getId()}
+            <a n:href="Teacher:confirmUserToUser $request->userId2, userId => $userId">Potvrdiť žiadosť</a>
+            <a n:href="Teacher:rejectUserToUser $request->userId2, userId => $userId">Zamietnuť žiadosť</a>
+            {else}
+            <a n:href="Teacher:confirmUserToUser $request->userId1, userId => $userId">Potvrdiť žiadosť</a>
+            <a n:href="Teacher:rejectUserToUser $request->userId1, userId => $userId">Zamietnuť žiadosť</a>
+            {/if}
+        </div>
+
+    </div>
+
+{/block}
+
+
+
+

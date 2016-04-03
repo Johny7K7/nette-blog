@@ -49,6 +49,11 @@ class User extends Object implements \IteratorAggregate
     private $nickname;
 
     /**
+     * @var $picture string
+     */
+    private $picture;
+    
+    /**
      * @var $teacher boolean
      */
     private $teacher;
@@ -70,6 +75,7 @@ class User extends Object implements \IteratorAggregate
         $user->birthdate = $row->birthdate;
         $user->password = $row->password;
         $user->nickname = $row->nickname;
+        $user->picture = $row->picture;
         $user->teacher = $row->teacher;
         return $user;
     }
@@ -185,6 +191,22 @@ class User extends Object implements \IteratorAggregate
     {
         $this->nickname = $nickname;
     }
+    
+    /**
+     * @return string
+     */
+    public function getPicture()
+    {
+        return $this->picture;
+    }
+        
+        /**
+     * @param string $picture
+     */
+    public function setPicture($picture)
+    {
+        $this->picture = $picture;
+    }
 
     /**
      * @return boolean
@@ -219,6 +241,7 @@ class User extends Object implements \IteratorAggregate
             'birthdate' => $this->birthdate,
             'password' => $this->password,
             'nickname' => $this->nickname,
+            'picture' => $this->picture,
             'teacher' => $this->teacher,
         ));
     }

@@ -25,15 +25,67 @@ class PostService extends Object
     /**
      * @param ArrayList[Post] $user
      */
+
     public function getAllPosts($userId)
     {
-        $sql = "SELECT p.*, s.title, u.username, 
+        $sql = "SELECT p.*, s.title, u.username,  u.picture,
+                (SELECT COUNT(*) FROM File f WHERE (f.postId = p.postId)) as 'countFile', 
+                (SELECT COUNT(*) FROM Link l WHERE (l.postId = p.postId)) as 'countLink', 
                 (SELECT COUNT(*) FROM User_to_Post_Like l WHERE (l.postId = p.postId AND l.userId = $userId)) as 'isLike', 
                 (SELECT COUNT(*) FROM Comment c WHERE (c.postId = p.postId)) as 'countComment', 
                 (SELECT COUNT(*) FROM User_to_Post_Like l WHERE (l.postId = p.postId)) as 'countLike' 
-                FROM Post p, Subject s, User u WHERE (p.subjectId = s.subjectId) AND (p.userId = u.userId)";
+                FROM Post p, Subject s, User u WHERE (p.subjectId = s.subjectId) AND (p.userId = u.userId) 
+                ORDER BY p.created_at DESC";
+        $posts = $this->database->query($sql)->fetchAll();
+
+        return $posts;
+    }
+    
+    public function getWall1Posts($userId)
+    {
+        $sql = "SELECT p.*, s.title, u.username,  u.picture,
+                (SELECT COUNT(*) FROM File f WHERE (f.postId = p.postId)) as 'countFile',
+                (SELECT COUNT(*) FROM User_to_Post_Like l WHERE (l.postId = p.postId AND l.userId = $userId)) as 'isLike', 
+                (SELECT COUNT(*) FROM Comment c WHERE (c.postId = p.postId)) as 'countComment', 
+                (SELECT COUNT(*) FROM User_to_Post_Like l WHERE (l.postId = p.postId)) as 'countLike' 
+                FROM Post p, Subject s, User u WHERE (p.subjectId = s.subjectId) AND (p.userId = u.userId AND u.userId = $userId) 
+                ORDER BY p.created_at DESC";
         $posts = $this->database->query($sql)->fetchAll();
         
+        return $posts;
+    }
+
+    public function getWall2Posts($userId)
+    {
+        $sql = "SELECT p.*, s.title, u.username,  u.picture,
+                (SELECT COUNT(*) FROM File f WHERE (f.postId = p.postId)) as 'countFile', 
+                (SELECT COUNT(*) FROM Link l WHERE (l.postId = p.postId)) as 'countLink', 
+                (SELECT COUNT(*) FROM User_to_Post_Like l WHERE (l.postId = p.postId AND l.userId = $userId)) as 'isLike', 
+                (SELECT COUNT(*) FROM Comment c WHERE (c.postId = p.postId)) as 'countComment', 
+                (SELECT COUNT(*) FROM User_to_Post_Like l WHERE (l.postId = p.postId)) as 'countLike' 
+                FROM Post p, Subject s, User u 
+ WHERE p.userId IN (
+    SELECT userId1 FROM User_to_User WHERE accepted = 1 AND userId2 = $userId
+    UNION ALL
+    SELECT userId2 FROM User_to_User WHERE accepted = 1 AND userId1 = $userId
+) AND (p.subjectId = s.subjectId) AND (p.userId = u.userId) AND (p.visible = 2 OR p.visible = 4)
+                ORDER BY p.created_at DESC";
+        $posts = $this->database->query($sql)->fetchAll();
+
+        return $posts;
+    }
+
+    public function getWall3Posts($userId)
+    {
+        $sql = "SELECT p.*, s.title, u.username,  u.picture,
+                (SELECT COUNT(*) FROM File f WHERE (f.postId = p.postId)) as 'countFile',
+                (SELECT COUNT(*) FROM User_to_Post_Like l WHERE (l.postId = p.postId AND l.userId = $userId)) as 'isLike', 
+                (SELECT COUNT(*) FROM Comment c WHERE (c.postId = p.postId)) as 'countComment', 
+                (SELECT COUNT(*) FROM User_to_Post_Like l WHERE (l.postId = p.postId)) as 'countLike' 
+                FROM Post p, Subject s, User u WHERE (p.subjectId = s.subjectId) AND (p.userId = u.userId AND u.userId = $userId) 
+                ORDER BY p.created_at DESC";
+        $posts = $this->database->query($sql)->fetchAll();
+
         return $posts;
     }
 
@@ -66,14 +118,15 @@ class PostService extends Object
     public function addTeacherSubject($userId, $subjectId)
     {
         $ts = array("userId" => $userId, "subjectId" => $subjectId);
-
-        $row = $this->database->table('Teacher_Subject')->insert($ts);
+        
+        $this->database->table('Teacher_Subject')->insert($ts);
     }
 
     public function getOnePost($postId, $userId)
     {
-        $sql = "SELECT p.*, s.title, u.username, 
+        $sql = "SELECT p.*, s.title, u.username, u.picture, 
                 (SELECT COUNT(*) FROM File f WHERE (f.postId = p.postId)) as 'countFile', 
+                (SELECT COUNT(*) FROM Link l WHERE (l.postId = p.postId)) as 'countLink', 
                 (SELECT COUNT(*) FROM User_to_Post_Like l WHERE (l.postId = p.postId AND l.userId = $userId)) as 'isLike', 
                 (SELECT COUNT(*) FROM Comment c WHERE (c.postId = p.postId)) as 'countComment', 
                 (SELECT COUNT(*) FROM User_to_Post_Like l WHERE (l.postId = p.postId)) as 'countLike' 
@@ -95,5 +148,12 @@ class PostService extends Object
     {
         $this->database->table('User_to_Post_Like')->where(array("userId" => $userId, "postId" => $postId))->delete($userId, $postId);
     }
-    
+
+    public function getAuthorOfPost($postId)
+    {
+        $sql = "SELECT * FROM Post WHERE postId = $postId";
+        $authorId = $this->database->query($sql)->fetch();
+        
+        return $authorId;
+    }
 }

@@ -38,7 +38,7 @@ class UserService extends Object
             throw new Exception("Uzivatel, ktory ma byt vymazany musi mat Id");
         }
 
-        $this->database->table(User::TABLE)->where('userId', $user->userId)->delete($user);
+        $this->database->table(User::TABLE)->where('userId', $user->userId)->delete();
     }
 
     public function updateUser(User $user) {
@@ -50,24 +50,29 @@ class UserService extends Object
 
     }
 
-    public function GetUserProfil($userId)
+    public function getUserProfile($userId)
     {
-        $sql = "SELECT u.*, f.* FROM User u, User_to_User f WHERE u.userId = $userId AND ((f.userId1 = $userId OR f.userId2 = $userId) AND f.accepted IS NULL)";
-        $loggedUser = $this->database->query($sql)->fetch();
+        $sql = "SELECT u.*, (SELECT COUNT(*) FROM User_to_User f WHERE ((f.userId1 = $userId OR f.userId2 = $userId) AND f.accepted IS NULL)) 
+                as 'countRequest' FROM User u WHERE userId = $userId";
+        $userProfile = $this->database->query($sql)->fetch();
         
-        return $loggedUser;
+        return $userProfile;
     }
 
     public function addUserToUser($userId1, $userId2)
     {
-        $sql = "SELECT COUNT(*) FROM User_to_User WHERE (userId1 = $userId1 AND userId2 = $userId2) 
-                OR (userId1 = $userId2 AND userId2 = $userId1)";
-        $condition = $this->database->query($sql)->fetch();
+        $id1 = min($userId1, $userId2);
+        $id2 = max($userId1, $userId2);
+        
+//        print_r($id1, $id2);
+//        exit;
 
-        if ($condition != true) {
+        $friend = $this->isFriend($userId1, $userId2);
+        
+        if ($friend->friend != 1) {
             $this->database->table('User_to_User')->insert(array(
-                'userId1' => $userId1,
-                'userId2' => $userId2
+                'userId1' => $id1,
+                'userId2' => $id2
             ));
         } else {
             throw new Exception("Pouzivatelia s tymito userId uz maju priatelstvo");
@@ -76,12 +81,11 @@ class UserService extends Object
     
     public function deleteUserToUser($userId1, $userId2)
     {
-        $sql = "SELECT COUNT(*) FROM User_to_User WHERE (userId1 = $userId1 AND userId2 = $userId2) 
-                OR (userId1 = $userId2 AND userId2 = $userId1)";
-        $condition = $this->database->query($sql)->fetch();
-
-        if ($condition == true) {
-            $this->database->table('User_to_User')->where(array('userId1' => $userId1, 'userId2' => $userId2))->delete($userId1, $userId2);
+        $id1 = min($userId1, $userId2);
+        $id2 = max($userId1, $userId2);
+        
+        if ($this->isFriend($userId1, $userId2) == true) {
+            $this->database->table('User_to_User')->where(array('userId1' => $id1, 'userId2' => $id2))->delete();
         } else {
             throw new Exception("Pouzivatelia s tymito userId nemaju priatelstvo");
         }
@@ -89,14 +93,70 @@ class UserService extends Object
 
     public function acceptUserToUser($userId1, $userId2, $accepted)
     {
-        $sql = "SELECT COUNT(*) FROM User_to_User WHERE (userId1 = $userId1 AND userId2 = $userId2) 
-                OR (userId1 = $userId2 AND userId2 = $userId1)";
-        $condition = $this->database->query($sql)->fetch();
+        $id1 = min($userId1, $userId2);
+        $id2 = max($userId1, $userId2);
         
-        if ($condition == true){
-            $this->database->table('User_to_User')->where(array('userId1' => $userId1, 'userId2' => $userId2))->update($userId1, $userId2, $accepted);
+        if ($this->isFriend($userId1, $userId2) == true){
+            $this->database->table('User_to_User')->where(array('userId1' => $id1, 'userId2' => $id2))->update(array(
+                'accepted' => $accepted,
+            ));
         } else {
             throw new Exception("Pouzivatelia s tymito userId nemaju priatelstvo");
         }
+    }
+
+    public function getAllRequests($userId)
+    {
+        $sql = "SELECT f.*, COALESCE((SELECT u.username FROM User u WHERE u.userId = f.userId1 AND u.userId <> $userId),( 
+                SELECT u.username FROM User u WHERE u.userId = f.userId2 AND u.userId <> $userId)) as 'username2' 
+                FROM User_to_User f WHERE ((f.userId1 = $userId OR f.userId2 = $userId) AND f.accepted IS NULL)";
+        $requests = $this->database->query($sql)->fetchAll();
+
+        return $requests;
+    }
+
+    public function isFriend($userId1, $userId2)
+    {
+        $id1 = min($userId1, $userId2);
+        $id2 = max($userId1, $userId2);
+
+        $sql = "SELECT COUNT(*) as 'friend' FROM User_to_User WHERE userId1 = $id1 AND userId2 = $id2 AND accepted = 1";
+        $friend = $this->database->query($sql)->fetch();
+
+        return $friend;
+    }
+
+    public function isRequest($userId1, $userId2)
+    {
+        $id1 = min($userId1, $userId2);
+        $id2 = max($userId1, $userId2);
+
+        $sql = "SELECT COUNT(*) as 'request' FROM User_to_User WHERE userId1 = $id1 AND userId2 = $id2 AND accepted IS NULL";
+        $friend = $this->database->query($sql)->fetch();
+
+        return $friend;
+    }
+
+    public function isTeacher($userId)
+    {
+        $sql = "SELECT teacher FROM User WHERE userId = $userId";
+        $teacher = $this->database->query($sql)->fetch();
+        
+        return $teacher;
+    }
+
+    public function originOfFriend($userId1, $userId2)
+    { 
+        $friend = $this->isFriend($userId1, $userId2);
+        
+        if ($friend->friend == 1){
+            if ($this->isTeacher($userId1) == true){
+                $origin = "Kolega";
+            }  else {
+                $origin = "Učiteľ";
+            } 
+        } else $origin = null;
+        
+        return $origin;
     }
 }
