@@ -10,6 +10,8 @@
                 <a n:href="Homepage:"><-- Späť</a>
                 <a n:if="$post->userId == $user->getIdentity()->getId()"
                         n:href="Post:changePost $post->postId, backlink => onePostAndComments, postId => $post->postId">Upraviť</a>
+                <a n:if="$post->userId == $user->getIdentity()->getId()"
+                        n:href="Post:deletePost $post->postId" onclick="return confirm('Ste si istý, že chcete vymazať tento príspevok?')">Vymazať</a>
             </div>
             {if !$post} <h2>Tento príspevok neexistuje.</h2>
             {else}
@@ -55,15 +57,26 @@
             {control commentForm}
 
             <hr>
+            {if $post->userId != $user->getIdentity()->getId()}
+                {control addShareForm}
+                <hr>
+            {/if}
+
+
         </div>
     </div>
     <div n:foreach="$comments as $comment" class="comment">
+        <div class="link" style="float: right; margin-top: 5px; margin-right: 5px">
+            <a n:if="$comment->userId == $user->getIdentity()->getId()"
+                    n:href="Post:deleteComment $comment->commentId, postId => $comment->postId" onclick="return confirm('Ste si istý, že chcete vymazať tento komentár?')">Vymazať</a>
+        </div>
         <div class="comment_content">
             <div n:if="$post->picture != null">
                 <img src="pictures/{$comment->picture}" alt="profilovka" style="width:50px; margin: 6px;">
             </div>
-            <h4>{$comment->username}</h4>
+            <h4><a n:href="Teacher:userProfile userId => $comment->userId, postId => $comment->postId">{$comment->username}</a></h4>
             <div class="date">{$comment->created_at|date:'j.n.y, G:i'}</div>
+            <br>
             <div>{$comment->content}<hr></div>
         </div>
     </div>

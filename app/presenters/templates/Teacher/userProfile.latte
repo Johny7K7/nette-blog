@@ -6,9 +6,9 @@
 
 <div class="link">
     {if $userId == $user->getIdentity()->getId()}
-    <a n:href="Homepage:"><-- Späť</a>
+    <a n:href="Homepage:"><-- Homepage</a>
     {else}
-    <a n:href="Post:onePostAndComments $postId"><-- Späť</a>
+    <a n:href="Homepage: "><-- Homepage</a>
     {/if}
 </div>
 
@@ -18,15 +18,15 @@
 
     <div>
         {if $userId != $user->getIdentity()->getId() AND $isRequest->request == 0 AND $isFriend->friend == 0}
-            <a n:href="Teacher:addUserToUser $userId, postId => $postId">Pridať priateľa</a>
+            <a n:href="Teacher:addUserToUser $userId">Pridať priateľa</a>
         {/if}
         {if $userId != $user->getIdentity()->getId() AND $isRequest->request == 1 AND $isFriend->friend == 0}
             Odoslaná žiadosť o priateľstvo
         {/if}
-        {if $isFriend->friend == 1}S uživateľom Priatelia{/if}
+        {if $isFriend->friend == 1}S uživateľom {$userProfile->username} ste Priatelia{/if}
     </div>
     <div>
-        {if $userId == $user->getIdentity()->getId()}
+        {if $userId == $user->getIdentity()->getId() AND $user->getIdentity()->teacher == 1}
             Počet žiadostí o priateľstvo:
             {if $userProfile->countRequest > 0}
             <a n:href="Teacher:requests userId => $userId">{$userProfile->countRequest}</a>
@@ -82,6 +82,15 @@
         <br>
         <hr>
     </div>
+
+    {if $user->getIdentity()->teacher == 0}
+        <h3>Učitelia:</h3>
+        <ol>
+            <div n:foreach="$teachers as $teacher">
+                <li><a n:href="Teacher:userProfile $teacher->userIdTeacher">{$teacher->username2}</a></li>
+            </div>
+        </ol>
+    {/if}
 
 
 

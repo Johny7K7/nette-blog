@@ -127,6 +127,14 @@ class PostPresenter extends BasePresenter
         $this->template->backlink = $this->getParameter('backlink');
         $this->template->postId = $this->getParameter('postId');
     }
+    
+    public function actionDeletePost($postId)
+    {
+        $this->postService->deletePost($postId);
+
+        $this->flashMessage('Príspevok bol úspešne zmazaný.');
+        $this->redirect('Homepage:');
+    }
 
     protected function createComponentTeacherSubjectForm()
     {
@@ -157,7 +165,7 @@ class PostPresenter extends BasePresenter
         $this->postService->addTeacherSubject($userId, $values->subject);
 
         $this->flashMessage('Predmet bol úspešne pridaný.');
-        $this->redirect('Homepage:');
+        $this->redirect('Teacher:userProfile', array('userId' => $userId));
     }
     
     public function renderSubject()
@@ -195,6 +203,15 @@ class PostPresenter extends BasePresenter
         $this->commentService->addComment($comment);
         $this->flashMessage('Komentár bol úspešne pridaný.');
         $this->redirect('this');
+    }
+    
+    public function actionDeleteComment($commentId)
+    {
+        $this->commentService->deleteComment($commentId);
+        $postId = $this->getParameter('postId');
+
+        $this->flashMessage('Komentár bol úspešne zmazaný.');
+        $this->redirect('Post:onePostAndComments', array('postId' => $postId));
     }
     
     public function renderOnePostAndComments($postId)
@@ -309,5 +326,46 @@ class PostPresenter extends BasePresenter
 
         $this->flashMessage('Odkaz na stránku bol úspešne pridaný.');
         $this->redirect("Post:allFiles", array('postId' => $values->postId));
+    }
+    
+    protected function createComponentAddShareForm()
+    {
+        $form = new Form();
+
+        $visible = array(
+            1 => 'Iba mňa',
+            2 => 'Kolegov (Učitelia - priatelia)',
+            3 => 'Žiakov',
+            4 => 'Všetkých',
+        );
+
+        $form->addSelect('visible', 'Zdieľať pre:', $visible)
+            ->setRequired('Vyberte viditeľnosť príspevku.');
+        $form->addSubmit('share', 'Zdieľať');
+        $form->onSuccess[] = array($this, 'addShareFormSucceeded');
+
+        return $form;
+    }
+
+    public function addShareFormSucceeded($form)
+    {
+        $values = $form->getValues();
+        $userId = $this->user->getIdentity()->getId();
+        $postId = $this->getParameter('postId');
+
+        $this->postService->addShare($userId, $postId, $values->visible);
+
+        $this->flashMessage('Príspevok je zdieľaný na vašej nástenke.');
+        $this->redirect("Homepage:wall1");
+    }
+    
+    public function actionCancelShare($postId)
+    {
+        $userId = $this->user->getIdentity()->getId();
+        
+        $this->postService->cancelShare($userId, $postId);
+
+        $this->flashMessage('Zrušenie zdieľania príspevku na vašej nástenke bolo úspešné.');
+        $this->redirect("Homepage:wall1");
     }
 }

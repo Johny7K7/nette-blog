@@ -38,18 +38,25 @@ class CommentService extends Object
 
     }
 
-    public function deleteComment (Comment $comment) {
-        if ($comment->getCommentId() == null) {
+    public function deleteComment ($commentId) {
+        if ($commentId == null) {
             throw new Exception("Komentar, ktory ma byt vymazany musi mat Id");
         }
 
-        $this->database->table(Comment::TABLE)->where('commentId', $comment->getCommentId())->delete($comment);
+        $this->database->table(Comment::TABLE)->where('commentId', $commentId)->delete();
     }
     
     public function getComments($postId)
     {
         $sql = "SELECT c.*, u.username, u.picture FROM Comment c, User u WHERE c.postId = $postId AND c.userId = u.userId ORDER BY c.created_at DESC";
         $comment = $this->database->query($sql)->fetchAll();
+        
+        return $comment;
+    }
+    
+    public function getOneComment($commentId)
+    {
+        $comment = $this->database->table(Comment::TABLE)->get($commentId);
         
         return $comment;
     }

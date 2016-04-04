@@ -49,6 +49,7 @@ class TeacherPresenter extends BasePresenter
         
         $request = $this->userService->isRequest($userId, $this->user->getIdentity()->getId());
         $friend = $this->userService->isFriend($userId, $this->user->getIdentity()->getId());
+        $teachers = $this->userService->getTeachersOfStudent($userId);
 
         $this->template->userProfile = $userProfile;
         $this->template->userId = $userId;
@@ -58,9 +59,7 @@ class TeacherPresenter extends BasePresenter
         $this->template->isRequest = $request;
         $this->template->isFriend = $friend;
         $this->template->link = $link;
-//        print_r($request);
-//        exit();
-
+        $this->template->teachers = $teachers;
     }
 
     public function actionAboutSubject($subjectId)
@@ -109,9 +108,6 @@ class TeacherPresenter extends BasePresenter
     {
         $userId2 = $this->user->getIdentity()->getId();
         $this->userService->addUserToUser($userId1, $userId2);
-        $postId = $this->getParameter('postId');
-        
-        $this->template->postId = $postId;
 
         $this->redirect('Teacher:userProfile', array('userId' => $userId1));
     }
@@ -163,5 +159,32 @@ class TeacherPresenter extends BasePresenter
 
         $this->flashMessage('Profilová fotka bola úspešne pridaná.');
         $this->redirect("Teacher:userProfile", array('userId' => $values->userId));
+    }
+    
+    protected function createComponentSearchUserForm()
+    {
+        $form = new Form();
+        
+        $form->addText('username', 'Meno a priezvisko');
+        $form->addSubmit('seachr', 'Hľadať');
+        $form->onSuccess[] = array($this, 'searchUserFormSucceeded');
+        
+        return $form;
+    }
+    
+    public function searchUserFormSucceeded($form)
+    {
+        $values = $form->getValues();
+        
+        $username = $values->username;
+        
+        $this->redirect('Teacher:search', $username);
+    }
+    
+    public function renderSearch($username)
+    {
+        $users = $this->userService->searchUser($username);
+        
+        $this->template->users = $users;
     }
 }

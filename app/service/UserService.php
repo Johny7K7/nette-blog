@@ -52,8 +52,8 @@ class UserService extends Object
 
     public function getUserProfile($userId)
     {
-        $sql = "SELECT u.*, (SELECT COUNT(*) FROM User_to_User f WHERE ((f.userId1 = $userId OR f.userId2 = $userId) AND f.accepted IS NULL)) 
-                as 'countRequest' FROM User u WHERE userId = $userId";
+        $sql = "SELECT u.*, (SELECT COUNT(*) FROM User_to_User f WHERE (f.userId1 = $userId OR f.userId2 = $userId) AND f.accepted IS NULL 
+                AND f.requested <> $userId) as 'countRequest' FROM User u WHERE userId = $userId";
         $userProfile = $this->database->query($sql)->fetch();
         
         return $userProfile;
@@ -63,16 +63,15 @@ class UserService extends Object
     {
         $id1 = min($userId1, $userId2);
         $id2 = max($userId1, $userId2);
-        
-//        print_r($id1, $id2);
-//        exit;
+
 
         $friend = $this->isFriend($userId1, $userId2);
         
         if ($friend->friend != 1) {
             $this->database->table('User_to_User')->insert(array(
                 'userId1' => $id1,
-                'userId2' => $id2
+                'userId2' => $id2,
+                'requested' => $userId2,
             ));
         } else {
             throw new Exception("Pouzivatelia s tymito userId uz maju priatelstvo");
@@ -109,7 +108,7 @@ class UserService extends Object
     {
         $sql = "SELECT f.*, COALESCE((SELECT u.username FROM User u WHERE u.userId = f.userId1 AND u.userId <> $userId),( 
                 SELECT u.username FROM User u WHERE u.userId = f.userId2 AND u.userId <> $userId)) as 'username2' 
-                FROM User_to_User f WHERE ((f.userId1 = $userId OR f.userId2 = $userId) AND f.accepted IS NULL)";
+                FROM User_to_User f WHERE (f.userId1 = $userId OR f.userId2 = $userId) AND f.accepted IS NULL AND f.requested <> $userId";
         $requests = $this->database->query($sql)->fetchAll();
 
         return $requests;
@@ -158,5 +157,39 @@ class UserService extends Object
         } else $origin = null;
         
         return $origin;
+    }
+
+    public function getTeachersOfStudent($userId)
+    {
+        $sql = "SELECT a.*, u.* FROM (
+                SELECT userId1 as 'userId' FROM User_to_User WHERE accepted = 1 AND userId2 = 1
+                UNION ALL
+                SELECT userId2 as 'userId' FROM User_to_User WHERE accepted = 1 AND userId1 = 1) a,
+                
+                User u  WHERE a.userId = u.userId AND u.teacher = 1";
+        $teachers = $this->database->query($sql)->fetchAll();
+        
+        return $teachers;
+    }
+
+    public function getStudentsOfTeacher($userId)
+    {
+        $sql = "SELECT a.*, u.* FROM (
+                SELECT userId1 as 'userId' FROM User_to_User WHERE accepted = 1 AND userId2 = 1
+                UNION ALL
+                SELECT userId2 as 'userId' FROM User_to_User WHERE accepted = 1 AND userId1 = 1) a,
+                
+                User u  WHERE a.userId = u.userId AND u.teacher = 0";
+        $students = $this->database->query($sql)->fetchAll();
+
+        return $students;
+    }
+
+    public function searchUser($username)
+    {
+        $sql = "SELECT * FROM User WHERE teacher = 1 AND username LIKE '%$username%'";
+        $users = $this->database->query($sql)->fetchAll();
+        
+        return $users;
     }
 }

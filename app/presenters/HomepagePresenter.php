@@ -25,8 +25,25 @@ class HomepagePresenter extends BasePresenter
 
 	public function renderDefault()
 	{
+		
+	}
+
+	public function renderWall1()
+	{
 		$userId = $this->user->getIdentity()->getId();
-		$this->template->posts = $this->postService->getAllPosts($userId);
+		$this->template->posts = $this->postService->getWall1Posts($userId);
+	}
+
+	public function renderWall2()
+	{
+		$userId = $this->user->getIdentity()->getId();
+		$this->template->posts = $this->postService->getWall2Posts($userId);
+	}
+
+	public function renderWall3()
+	{
+		$userId = $this->user->getIdentity()->getId();
+		$this->template->posts = $this->postService->getWall3Posts($userId);
 	}
 	
 	public function actionLike($postId)
@@ -34,6 +51,8 @@ class HomepagePresenter extends BasePresenter
 		$userId = $this->user->getIdentity()->getId();
 		$this->postService->like($userId, $postId);
 
+		$backlink = $this->getParameter('backlink');
+		
 		$this->flashMessage('K príspevku bol pridaný váš Like.');
 		$this->redirect('Homepage:');
 	}

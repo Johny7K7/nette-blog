@@ -112,6 +112,34 @@
         #content { background: white; border: 1px solid #eff4f7; padding: 10px 4%; overflow: hidden; }
         #content > h2 { font-size: 130%; color: #666; clear: both; padding: 1.2em 0; margin: 0; }
 
+        .menu {
+            background: url(images/menu-bg.jpg) repeat-x top left #fff;
+            height: 44px;
+            list-style: none;
+            margin: 0;
+        }
+        .menu ul li {
+
+        }
+        .menu li {
+            float: left;
+            padding: 10px 0;
+        }
+        .menu li a {
+            color: #fff;
+            font-face: Arial;
+            padding: 0 15px;
+            border-left: 1px solid #8e8e8e;
+            border-right: 1px solid #3f3f3f;
+        }
+        .menu li.first a {
+            border-left: none;
+        }
+        .menu li.last a {
+            border-right: none;
+            float: right;
+        }
+
         h2 span { color: #87A7D5; }
         h2 a { text-decoration: none; background: transparent; }
 
@@ -165,6 +193,31 @@
             <h1> Diplomová práca</h1>
         </div>
 
+        <ul class="menu">
+            <li class="first" n:if="$user->getIdentity()->teacher == 1">
+                <a n:href="Homepage:wall1">Moja Nástenka</a>
+            </li>
+
+            <li class="first" n:if="$user->getIdentity()->teacher == 0">
+                <a n:href="Homepage:wall3">Moja Nástenka</a>
+            </li>
+
+            <li n:if="$user->getIdentity()->teacher == 1">
+                <a n:href="Homepage:wall2">Nástenka mojich priateľov</a>
+            </li>
+
+            <li n:if="$user->getIdentity()->teacher == 1">
+                <a n:href="Post:postForm">Pridanie prispevku</a>
+            </li>
+
+            <li>
+                <a n:href="Teacher:userProfile $user->getIdentity()->getId()"><b>Profil</b></a>
+            </li>
+
+            <li class="last">
+                <a n:href="Teacher:search"><b>Hľadať</b></a>
+            </li>
+        </ul>
 
         <div id="content">
             {block heading}{/block}
@@ -173,7 +226,6 @@
                 <div class="link">
                     <a n:href="Sign:out" style="float:right;"><b>Odhlasenie</b></a>
                 </div>
-
 
                 <div>
                     <b>Prihlásený používateľ:</b> {$user->getIdentity()->username} <br>
