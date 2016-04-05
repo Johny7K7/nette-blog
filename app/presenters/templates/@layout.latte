@@ -193,31 +193,7 @@
             <h1> Diplomová práca</h1>
         </div>
 
-        <ul class="menu">
-            <li class="first" n:if="$user->getIdentity()->teacher == 1">
-                <a n:href="Homepage:wall1">Moja Nástenka</a>
-            </li>
-
-            <li class="first" n:if="$user->getIdentity()->teacher == 0">
-                <a n:href="Homepage:wall3">Moja Nástenka</a>
-            </li>
-
-            <li n:if="$user->getIdentity()->teacher == 1">
-                <a n:href="Homepage:wall2">Nástenka mojich priateľov</a>
-            </li>
-
-            <li n:if="$user->getIdentity()->teacher == 1">
-                <a n:href="Post:postForm">Pridanie prispevku</a>
-            </li>
-
-            <li>
-                <a n:href="Teacher:userProfile $user->getIdentity()->getId()"><b>Profil</b></a>
-            </li>
-
-            <li class="last">
-                <a n:href="Teacher:search"><b>Hľadať</b></a>
-            </li>
-        </ul>
+        {block menu}{/block}
 
         <div id="content">
             {block heading}{/block}

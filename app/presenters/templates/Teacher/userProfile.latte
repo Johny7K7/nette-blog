@@ -1,3 +1,30 @@
+{block menu}
+    <ul class="menu">
+        <li class="first" n:if="$user->getIdentity()->teacher == 1">
+            <a n:href="Homepage:wall1">Moja Nástenka</a>
+        </li>
+
+        <li class="first" n:if="$user->getIdentity()->teacher == 0">
+            <a n:href="Homepage:wall3">Moja Nástenka</a>
+        </li>
+
+        <li n:if="$user->getIdentity()->teacher == 1">
+            <a n:href="Homepage:wall2">Nástenka mojich priateľov</a>
+        </li>
+
+        <li n:if="$user->getIdentity()->teacher == 1">
+            <a n:href="Post:postForm">Pridanie prispevku</a>
+        </li>
+
+        <li>
+            <a n:href="Teacher:userProfile $user->getIdentity()->getId()"><b>Profil</b></a>
+        </li>
+
+        <li class="last">
+            <a n:href="Teacher:search"><b>Hľadať</b></a>
+        </li>
+    </ul>
+{/block}
 {block heading}
     <h1 n:block="title">Vitejte v Informačnom systéme pre zdieľanie študijných materiálov.</h1>
 {/block}
@@ -17,13 +44,21 @@
 <div class="profil">
 
     <div>
-        {if $userId != $user->getIdentity()->getId() AND $isRequest->request == 0 AND $isFriend->friend == 0}
+        {if $userId != $user->getIdentity()->getId() AND $isRequest->request == 0 AND $isFriend->friend == 0 AND $userProfile->teacher == 1}
             <a n:href="Teacher:addUserToUser $userId">Pridať priateľa</a>
         {/if}
         {if $userId != $user->getIdentity()->getId() AND $isRequest->request == 1 AND $isFriend->friend == 0}
             Odoslaná žiadosť o priateľstvo
         {/if}
-        {if $isFriend->friend == 1}S uživateľom {$userProfile->username} ste Priatelia{/if}
+        {if $userProfile->teacher == 1 AND $user->getIdentity()->teacher == 1 AND $isFriend->friend == 1}
+            S uživateľom <style font="bold">{$userProfile->username}</style> ste kolegovia.
+        {/if}
+        {if $userProfile->teacher == 0 AND $user->getIdentity()->teacher == 1 AND $isFriend->friend == 1}
+            Uživateľ <style font="bold">{$userProfile->username}</style> je váš žiak.
+        {/if}
+        {if $userProfile->teacher == 1 AND $user->getIdentity()->teacher == 0 AND $isFriend->friend == 1}
+            Uživateľ <style font="bold">{$userProfile->username}</style> je váš učiteľ.
+        {/if}
     </div>
     <div>
         {if $userId == $user->getIdentity()->getId() AND $user->getIdentity()->teacher == 1}
@@ -87,10 +122,29 @@
         <h3>Učitelia:</h3>
         <ol>
             <div n:foreach="$teachers as $teacher">
-                <li><a n:href="Teacher:userProfile $teacher->userIdTeacher">{$teacher->username2}</a></li>
+                <li><a n:href="Teacher:userProfile $teacher->userId">{$teacher->username}</a></li>
             </div>
         </ol>
+        {else}
+        {if $teachers != null}
+        <h3>Kolegovia:</h3>
+        <ol>
+            <div n:foreach="$teachers as $teacher">
+                <li><a n:href="Teacher:userProfile $teacher->userId">{$teacher->username}</a></li>
+            </div>
+        </ol>
+        {/if}
+        <br>
+        {if $students != null}
+        <h3>Žiaci:</h3>
+        <ol>
+            <div n:foreach="$students as $student">
+                <li><a n:href="Teacher:userProfile $student->userId">{$student->username}</a></li>
+            </div>
+        </ol>
+        {/if}
     {/if}
+
 
 
 

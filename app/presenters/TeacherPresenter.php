@@ -49,7 +49,8 @@ class TeacherPresenter extends BasePresenter
         
         $request = $this->userService->isRequest($userId, $this->user->getIdentity()->getId());
         $friend = $this->userService->isFriend($userId, $this->user->getIdentity()->getId());
-        $teachers = $this->userService->getTeachersOfStudent($userId);
+        $teachers = $this->userService->getTeachersOfStudentOrCollegesOfTeacher($userId);
+        $students = $this->userService->getStudentsOfTeacher($userId);
 
         $this->template->userProfile = $userProfile;
         $this->template->userId = $userId;
@@ -60,6 +61,7 @@ class TeacherPresenter extends BasePresenter
         $this->template->isFriend = $friend;
         $this->template->link = $link;
         $this->template->teachers = $teachers;
+        $this->template->students = $students;
     }
 
     public function actionAboutSubject($subjectId)

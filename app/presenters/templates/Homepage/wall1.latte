@@ -1,3 +1,30 @@
+{block menu}
+    <ul class="menu">
+        <li class="first" n:if="$user->getIdentity()->teacher == 1">
+            <a n:href="Homepage:wall1">Moja Nástenka</a>
+        </li>
+
+        <li class="first" n:if="$user->getIdentity()->teacher == 0">
+            <a n:href="Homepage:wall3">Moja Nástenka</a>
+        </li>
+
+        <li n:if="$user->getIdentity()->teacher == 1">
+            <a n:href="Homepage:wall2">Nástenka mojich priateľov</a>
+        </li>
+
+        <li n:if="$user->getIdentity()->teacher == 1">
+            <a n:href="Post:postForm">Pridanie prispevku</a>
+        </li>
+
+        <li>
+            <a n:href="Teacher:userProfile $user->getIdentity()->getId()"><b>Profil</b></a>
+        </li>
+
+        <li class="last">
+            <a n:href="Teacher:search"><b>Hľadať</b></a>
+        </li>
+    </ul>
+{/block}
 {block heading}
     <h1 n:block="title">Vitejte v Informačnom systéme pre zdieľanie študijných materiálov.</h1>
 {/block}
@@ -8,6 +35,9 @@
         <div class="post_content">
             <div>
                 <p class="link"><a n:href="Post:onePostAndComments $post->postId" style="float: right; margin-top: 5px; margin-right: 5px">Detail --></a></p>
+                {if $post->shared == 1}
+                    <h2>Príspevok zdieľaný uživateľom {$post->sharedBy}</h2>
+                {/if}
                 <img src="pictures/{$post->picture}" alt="profilovka" style="width:100px; margin: 6px;">
                 <h2>{$post->username}</h2>
                 Viditeľnosť:

@@ -31,6 +31,7 @@ class HomepagePresenter extends BasePresenter
 	public function renderWall1()
 	{
 		$userId = $this->user->getIdentity()->getId();
+		$posts = $this->postService->getWall1Posts($userId);
 		$this->template->posts = $this->postService->getWall1Posts($userId);
 	}
 

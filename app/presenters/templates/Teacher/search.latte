@@ -1,3 +1,30 @@
+{block menu}
+    <ul class="menu">
+        <li class="first" n:if="$user->getIdentity()->teacher == 1">
+            <a n:href="Homepage:wall1">Moja Nástenka</a>
+        </li>
+
+        <li class="first" n:if="$user->getIdentity()->teacher == 0">
+            <a n:href="Homepage:wall3">Moja Nástenka</a>
+        </li>
+
+        <li n:if="$user->getIdentity()->teacher == 1">
+            <a n:href="Homepage:wall2">Nástenka mojich priateľov</a>
+        </li>
+
+        <li n:if="$user->getIdentity()->teacher == 1">
+            <a n:href="Post:postForm">Pridanie prispevku</a>
+        </li>
+
+        <li>
+            <a n:href="Teacher:userProfile $user->getIdentity()->getId()"><b>Profil</b></a>
+        </li>
+
+        <li class="last">
+            <a n:href="Teacher:search"><b>Hľadať</b></a>
+        </li>
+    </ul>
+{/block}
 {block heading}
     <h1 n:block="title">Vitejte v Informačnom systéme pre zdieľanie študijných materiálov.</h1>
 {/block}
@@ -10,13 +37,22 @@
 
     <h3>Hľadať uživateľa</h3>
     {control searchUserForm}
+    <br>
+    <hr>
 
 
         <div n:foreach="$users as $user">
-            {$user->username}
+            <img src="pictures/{$user->picture}" alt="profilovka" style="width:50px; margin: 6px; float: left">
+            <div style="float: left">
+                <p style="font-size: 16px">{$user->username} </p><p class="link" style="margin-left: 250px;"><a class="link" n:href="Teacher:userProfile $user->userId">Profil</a></p>
+            </div>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <hr>
         </div>
-
-
 
 {/block}
 

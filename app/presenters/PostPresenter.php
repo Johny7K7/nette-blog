@@ -147,7 +147,8 @@ class PostPresenter extends BasePresenter
 
             $form->addSelect('subject', 'Predmet:', $subjects)
                 ->setRequired('Vyberte predmet zo zoznamu');
-
+            $form->addTextArea('about', 'O predmete:')
+                ->addRule(Form::MAX_LENGTH, 'Maximálny počet znakov je %d', 5000);
             $form->addSubmit('add', 'Pridať predmet');
             $form->onSuccess[] = array($this, 'teacherSubjectFormSucceeded');
             return $form;
@@ -162,7 +163,7 @@ class PostPresenter extends BasePresenter
 
         $userId = $this->user->getIdentity()->getId();
 
-        $this->postService->addTeacherSubject($userId, $values->subject);
+        $this->postService->addTeacherSubject($userId, $values->subject, $values->about);
 
         $this->flashMessage('Predmet bol úspešne pridaný.');
         $this->redirect('Teacher:userProfile', array('userId' => $userId));

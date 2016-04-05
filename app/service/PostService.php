@@ -43,21 +43,25 @@ class PostService extends Object
     
     public function getWall1Posts($userId)
     {
-        $sql = "SELECT * FROM (SELECT p.*, s.title, u.username,  u.picture,
+        $sql = "SELECT * FROM (SELECT p.postId, p.userId, p.created_at, p.content, p.visible, p.subjectId, s.title, u.username,  u.picture,
                 (SELECT COUNT(*) FROM File f WHERE (f.postId = p.postId)) +
                 (SELECT COUNT(*) FROM Link l WHERE (l.postId = p.postId)) as 'countAdditive',
                 (SELECT COUNT(*) FROM User_to_Post_Like l WHERE (l.postId = p.postId AND l.userId = $userId)) as 'isLike', 
                 (SELECT COUNT(*) FROM Comment c WHERE (c.postId = p.postId)) as 'countComment', 
-                (SELECT COUNT(*) FROM User_to_Post_Like l WHERE (l.postId = p.postId)) as 'countLike' 
+                (SELECT COUNT(*) FROM User_to_Post_Like l WHERE (l.postId = p.postId)) as 'countLike',
+                0 as 'shared', 
+                '' as 'sharedBy' 
                 FROM Post p, Subject s, User u WHERE (p.subjectId = s.subjectId) AND (p.userId = u.userId AND u.userId = $userId)
                 UNION ALL 
-                SELECT p.*, s.title, u.username,  u.picture,
+                SELECT p.postId, p.userId, p.created_at, p.content, us.visible, p.subjectId, s.title, u.username,  u.picture,
                 (SELECT COUNT(*) FROM File f WHERE (f.postId = p.postId)) +
                 (SELECT COUNT(*) FROM Link l WHERE (l.postId = p.postId)) as 'countAdditive',
                 (SELECT COUNT(*) FROM User_to_Post_Like l WHERE (l.postId = p.postId AND l.userId = $userId)) as 'isLike', 
                 (SELECT COUNT(*) FROM Comment c WHERE (c.postId = p.postId)) as 'countComment', 
-                (SELECT COUNT(*) FROM User_to_Post_Like l WHERE (l.postId = p.postId)) as 'countLike' 
-                FROM Post p, Subject s, User u WHERE (p.subjectId = s.subjectId) AND (p.userId = u.userId) 
+                (SELECT COUNT(*) FROM User_to_Post_Like l WHERE (l.postId = p.postId)) as 'countLike',
+                1 as 'shared',
+                (SELECT u.username FROM User u WHERE u.userId = us.userId) as 'sharedBy' 
+		        FROM Post p, Subject s, User u, User_to_Post_Share us WHERE (p.subjectId = s.subjectId) AND (p.userId = u.userId) 
                 AND (p.postId IN (SELECT s.postId FROM User_to_Post_Share s WHERE s.userId = $userId))) a ORDER BY created_at DESC";
         $posts = $this->database->query($sql)->fetchAll();
         
@@ -168,9 +172,9 @@ class PostService extends Object
         $this->database->table(Post::TABLE)->where('postId', $postId)->delete();
     }
     
-    public function addTeacherSubject($userId, $subjectId)
+    public function addTeacherSubject($userId, $subjectId, $aboutSubject)
     {
-        $ts = array("userId" => $userId, "subjectId" => $subjectId);
+        $ts = array("userId" => $userId, "subjectId" => $subjectId, "aboutSubject" => $aboutSubject);
         
         $this->database->table('Teacher_Subject')->insert($ts);
     }

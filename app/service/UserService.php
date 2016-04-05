@@ -159,12 +159,12 @@ class UserService extends Object
         return $origin;
     }
 
-    public function getTeachersOfStudent($userId)
+    public function getTeachersOfStudentOrCollegesOfTeacher($userId)
     {
-        $sql = "SELECT a.*, u.* FROM (
-                SELECT userId1 as 'userId' FROM User_to_User WHERE accepted = 1 AND userId2 = 1
+        $sql = "SELECT u.* FROM (
+                SELECT userId1 as 'userId' FROM User_to_User WHERE accepted = 1 AND userId2 = $userId
                 UNION ALL
-                SELECT userId2 as 'userId' FROM User_to_User WHERE accepted = 1 AND userId1 = 1) a,
+                SELECT userId2 as 'userId' FROM User_to_User WHERE accepted = 1 AND userId1 = $userId) a,
                 
                 User u  WHERE a.userId = u.userId AND u.teacher = 1";
         $teachers = $this->database->query($sql)->fetchAll();
@@ -174,10 +174,10 @@ class UserService extends Object
 
     public function getStudentsOfTeacher($userId)
     {
-        $sql = "SELECT a.*, u.* FROM (
-                SELECT userId1 as 'userId' FROM User_to_User WHERE accepted = 1 AND userId2 = 1
+        $sql = "SELECT u.* FROM (
+                SELECT userId1 as 'userId' FROM User_to_User WHERE accepted = 1 AND userId2 = $userId
                 UNION ALL
-                SELECT userId2 as 'userId' FROM User_to_User WHERE accepted = 1 AND userId1 = 1) a,
+                SELECT userId2 as 'userId' FROM User_to_User WHERE accepted = 1 AND userId1 = $userId) a,
                 
                 User u  WHERE a.userId = u.userId AND u.teacher = 0";
         $students = $this->database->query($sql)->fetchAll();
@@ -187,7 +187,7 @@ class UserService extends Object
 
     public function searchUser($username)
     {
-        $sql = "SELECT * FROM User WHERE teacher = 1 AND username LIKE '%$username%'";
+        $sql = "SELECT * FROM User WHERE username LIKE '%$username%'";
         $users = $this->database->query($sql)->fetchAll();
         
         return $users;
